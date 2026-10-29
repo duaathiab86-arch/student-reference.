@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أنظمة قواعد البيانات (4643) | د. ماجد حمايل - أ. أنيس ربايعة</title>
+<style>
+:root{--primary:#1565C0;--primary-dark:#0D47A1;--primary-soft:rgba(21,101,192,0.08);--bg:#ffffff;--bg-secondary:#f7f7f9;--bg-card:#ffffff;--text:#1a1a2e;--text-secondary:#6b7280;--border:#e5e7eb;--success:#059669;--success-bg:#ecfdf5;--error:#dc2626;--error-bg:#fef2f2;--warning:#d97706;--warning-bg:#fffbeb;--info:#2563eb;--info-bg:#eff6ff;--shadow:0 4px 20px rgba(0,0,0,0.06);--shadow-lg:0 10px 40px rgba(0,0,0,0.12);--radius:14px;--radius-sm:8px;--font-size:16px;--transition:all 0.25s cubic-bezier(0.4,0,0.2,1);--gold:#B7935A;--gold-light:#D4B885}
+[data-theme="teal"]{--primary:#00796B;--primary-dark:#004D40;--primary-soft:rgba(0,121,107,0.08)}
+[data-theme="indigo"]{--primary:#303F9F;--primary-dark:#1A237E;--primary-soft:rgba(48,63,159,0.08)}
+[data-theme="orange"]{--primary:#E64A19;--primary-dark:#BF360C;--primary-soft:rgba(230,74,25,0.08)}
+[data-theme="purple"]{--primary:#6A1B9A;--primary-dark:#4A148C;--primary-soft:rgba(106,27,154,0.08)}
+[data-theme="green"]{--primary:#2E7D32;--primary-dark:#1B5E20;--primary-soft:rgba(46,125,50,0.08)}
+[data-dark="true"]{--bg:#0f0f14;--bg-secondary:#1a1a24;--bg-card:#1e1e2a;--text:#e8e8f0;--text-secondary:#9ca3af;--border:#2d2d3d;--shadow:0 4px 20px rgba(0,0,0,0.4);--shadow-lg:0 10px 40px rgba(0,0,0,0.5);--success-bg:#064e3b;--error-bg:#7f1d1d;--warning-bg:#78350f;--info-bg:#1e3a8a}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--bg);color:var(--text);font-size:var(--font-size);line-height:1.9;transition:background 0.3s,color 0.3s,font-size 0.2s;-webkit-font-smoothing:antialiased}
+.app{display:flex;min-height:100vh}
+.sidebar{width:320px;background:var(--bg-secondary);border-left:1px solid var(--border);padding:20px 14px;position:fixed;right:0;top:0;bottom:0;overflow-y:auto;z-index:100;transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;gap:6px}
+.sidebar-brand{padding:0 8px 16px;border-bottom:2px solid var(--primary);margin-bottom:14px}
+.sidebar-brand .uni{font-size:0.72rem;color:var(--primary);font-weight:800;line-height:1.5}
+.sidebar-brand .fac{font-size:0.68rem;color:var(--text-secondary);line-height:1.5}
+.sidebar-brand h1{font-size:0.95rem;font-weight:800;color:var(--text);line-height:1.4;margin-top:8px}
+.sidebar-brand .doctor{font-size:0.7rem;color:var(--primary);font-weight:700;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);line-height:1.5}
+.sidebar-brand .doctor .role{display:block;font-size:0.65rem;color:var(--text-secondary);font-weight:600;margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition);border:2px solid transparent;background:transparent;color:var(--text);font-size:0.85rem;font-family:inherit;text-align:right;width:100%;font-weight:600}
+.nav-item:hover:not(.locked){background:var(--primary-soft)}
+.nav-item:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.nav-item.active{background:var(--primary);color:#fff;border-color:var(--primary-dark);box-shadow:0 4px 15px rgba(0,0,0,0.15)}
+.nav-item.locked{opacity:0.45;cursor:not-allowed;filter:grayscale(0.6)}
+.nav-item .nav-icon{font-size:1.1rem;width:26px;text-align:center;flex-shrink:0}
+.nav-item .nav-text{flex:1;line-height:1.4}
+.nav-item .nav-status{font-size:0.65rem;padding:2px 7px;border-radius:20px;background:var(--success);color:#fff;font-weight:700;flex-shrink:0}
+.nav-item.locked .nav-status{background:var(--text-secondary)}
+.sidebar-footer{margin-top:auto;padding-top:14px;border-top:1px solid var(--border);font-size:0.7rem;color:var(--text-secondary);text-align:center;line-height:1.6}
+.main{flex:1;margin-right:320px;padding:24px 32px 100px;max-width:100%;transition:margin 0.35s}
+.uni-header{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border-radius:var(--radius);padding:32px;margin-bottom:24px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
+.uni-header::before{content:'';position:absolute;top:-50%;left:-20%;width:200px;height:200px;background:rgba(255,255,255,0.08);border-radius:50%}
+.uni-header::after{content:'';position:absolute;bottom:-80px;right:-40px;width:240px;height:240px;background:rgba(255,255,255,0.06);border-radius:50%}
+.uni-header .top-brand{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.25);position:relative;z-index:1;flex-wrap:wrap}
+.uni-header .top-brand .avatar{width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:grid;place-items:center;font-size:1.6rem;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 4px 15px rgba(0,0,0,0.25);border:3px solid rgba(255,255,255,0.3)}
+.uni-header .top-brand .brand-text{min-width:0}
+.uni-header .top-brand .title-1{font-size:1.05rem;font-weight:800;color:#fff;line-height:1.4}
+.uni-header .top-brand .title-2{font-size:0.88rem;color:var(--gold-light);font-weight:700;margin-top:4px;line-height:1.5}
+.uni-header .top-brand .title-3{font-size:0.78rem;color:rgba(255,255,255,0.9);margin-top:2px;line-height:1.5}
+.uni-header .uni-name{font-size:1.15rem;font-weight:800;margin-bottom:6px;position:relative;z-index:1}
+.uni-header .fac-name{font-size:0.92rem;opacity:0.95;margin-bottom:4px;position:relative;z-index:1}
+.uni-header .course-title{font-size:1.4rem;font-weight:900;margin-bottom:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.3);position:relative;z-index:1}
+.uni-header .doctor-name{font-size:1rem;font-weight:800;opacity:0.98;position:relative;z-index:1}
+.uni-header .doctor-role{font-size:0.82rem;opacity:0.92;margin-top:4px;position:relative;z-index:1;line-height:1.6}
+.top-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.menu-toggle{display:none;background:var(--primary);color:#fff;border:none;padding:10px 14px;border-radius:var(--radius-sm);cursor:pointer;font-size:1.3rem}
+.page-title{font-size:1.3rem;font-weight:800;color:var(--primary);flex:1;min-width:200px;line-height:1.4}
+.topic{background:var(--bg-card);border-radius:var(--radius);padding:24px 28px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:20px;border-right:5px solid var(--primary);transition:var(--transition)}
+.topic h3{color:var(--primary);font-size:1.1rem;margin-bottom:14px;display:flex;align-items:center;gap:10px;line-height:1.5}
+.topic h3 .topic-num{background:var(--primary);color:#fff;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0}
+.topic p{color:var(--text);font-size:0.94rem;line-height:2;text-align:justify;margin-bottom:10px}
+.topic p:last-child{margin-bottom:0}
+.topic ul{margin:10px 20px}
+.topic li{margin-bottom:6px;font-size:0.92rem;line-height:1.9}
+.topic code{background:var(--bg-secondary);color:var(--primary);padding:2px 8px;border-radius:6px;font-family:'Consolas','Courier New',monospace;font-size:0.85rem;border:1px solid var(--border);direction:ltr;display:inline-block}
+.topic pre{background:#1a1a2e;color:#e8e8f0;padding:16px;border-radius:var(--radius-sm);font-family:'Consolas','Courier New',monospace;font-size:0.85rem;overflow-x:auto;direction:ltr;text-align:left;margin:12px 0;line-height:1.7;border:1px solid var(--border)}
+.question-block{background:var(--bg-card);border-radius:var(--radius);padding:22px 24px;margin-bottom:16px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.question-block .q-text{font-weight:700;margin-bottom:14px;font-size:0.98rem;display:flex;gap:10px}
+.q-num{background:var(--primary-soft);color:var(--primary);width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;flex-shrink:0}
+.options{display:flex;flex-direction:column;gap:8px}
+.option{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--radius-sm);border:2px solid var(--border);cursor:pointer;transition:var(--transition);background:var(--bg);font-size:0.9rem}
+.option:hover{border-color:var(--primary);background:var(--primary-soft)}
+.option:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.option.selected{border-color:var(--primary);background:var(--primary-soft)}
+.option .opt-letter{width:26px;height:26px;border-radius:50%;background:var(--bg-secondary);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;flex-shrink:0;border:1px solid var(--border)}
+.option.selected .opt-letter{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 28px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:inherit;font-size:0.95rem;font-weight:700;transition:var(--transition);text-decoration:none}
+.btn:focus-visible{outline:3px solid var(--primary);outline-offset:3px}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 4px 15px rgba(21,101,192,0.3)}
+.btn-primary:hover:not(:disabled){background:var(--primary-dark);transform:translateY(-2px)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+.btn-outline{background:transparent;color:var(--primary);border:2px solid var(--primary)}
+.btn-outline:hover{background:var(--primary-soft)}
+.btn-large{padding:16px 40px;font-size:1.05rem}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;align-items:center}
+.score-box{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border-radius:var(--radius);padding:32px;text-align:center;margin:24px 0;box-shadow:var(--shadow-lg)}
+.score-box .score-num{font-size:3.5rem;font-weight:900;line-height:1;margin-bottom:8px}
+.score-box .score-label{font-size:1.1rem;opacity:0.9}
+.flash-section{margin:30px 0;padding:24px;background:linear-gradient(135deg,rgba(183,147,90,0.06),rgba(21,101,192,0.04));border-radius:var(--radius);border:2px dashed var(--gold)}
+[data-dark="true"] .flash-section{background:linear-gradient(135deg,rgba(183,147,90,0.12),rgba(21,101,192,0.08))}
+.flash-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.flash-header h3{color:var(--gold);font-size:1.15rem;font-weight:800;margin:0;display:flex;align-items:center;gap:10px}
+.flash-header .flash-counter{background:var(--gold);color:#fff;padding:6px 14px;border-radius:20px;font-size:0.8rem;font-weight:800}
+.flash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.flash-card{perspective:1000px;height:220px;cursor:pointer;transition:transform 0.2s}
+.flash-card:hover{transform:translateY(-3px)}
+.flash-card-inner{position:relative;width:100%;height:100%;transition:transform 0.7s cubic-bezier(0.4,0,0.2,1);transform-style:preserve-3d}
+.flash-card.flipped .flash-card-inner{transform:rotateY(180deg)}
+.flash-card-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden}
+.flash-card-front{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;justify-content:space-between}
+.flash-card-front .fc-num{align-self:flex-start;background:rgba(255,255,255,0.2);color:var(--gold-light);padding:4px 12px;border-radius:20px;font-size:0.72rem;font-weight:800;font-family:'Consolas',monospace}
+.flash-card-front .fc-question{font-size:0.9rem;font-weight:700;line-height:1.55;flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px 0}
+.flash-card-front .fc-hint{font-size:0.68rem;color:var(--gold-light);text-align:center;font-weight:700;opacity:0.9}
+.flash-card-back{background:linear-gradient(135deg,#fff,#fafafa);color:var(--text);transform:rotateY(180deg);border-color:var(--gold);border-width:2px}
+[data-dark="true"] .flash-card-back{background:linear-gradient(135deg,var(--bg-card),var(--bg-secondary))}
+.flash-card-back .fc-answer-label{color:var(--gold);font-size:0.7rem;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:0.5px}
+.flash-card-back .fc-answer{font-size:0.83rem;font-weight:600;line-height:1.6;color:var(--text);overflow-y:auto;flex:1}
+.flash-controls{display:flex;justify-content:center;gap:10px;margin-top:20px;flex-wrap:wrap}
+.flash-btn{background:var(--bg-card);border:2px solid var(--border);color:var(--text);padding:8px 18px;border-radius:20px;font-size:0.82rem;font-weight:700;cursor:pointer;transition:var(--transition);font-family:inherit}
+.flash-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(183,147,90,0.08)}
+.controls-widget{position:fixed;bottom:24px;left:24px;z-index:200;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.controls-toggle{width:52px;height:52px;border-radius:50%;background:var(--primary);color:#fff;border:none;cursor:pointer;font-size:1.4rem;box-shadow:var(--shadow-lg);transition:var(--transition);display:flex;align-items:center;justify-content:center}
+.controls-toggle:hover{transform:scale(1.1) rotate(15deg)}
+.controls-panel{display:none;background:var(--bg-card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow-lg);border:1px solid var(--border);flex-direction:column;gap:14px;min-width:250px;max-height:80vh;overflow-y:auto}
+.controls-panel.open{display:flex}
+.control-group label{font-size:0.78rem;font-weight:700;color:var(--text-secondary);display:block;margin-bottom:8px}
+.color-swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:var(--transition)}
+.swatch:hover{transform:scale(1.15)}
+.swatch.active{border-color:var(--text);transform:scale(1.15)}
+.swatch-blue{background:#1565C0}.swatch-teal{background:#00796B}.swatch-indigo{background:#303F9F}.swatch-orange{background:#E64A19}.swatch-purple{background:#6A1B9A}.swatch-green{background:#2E7D32}
+.font-controls{display:flex;gap:8px;align-items:center}
+.font-btn{width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-size:1rem;font-weight:700;transition:var(--transition)}
+.font-btn:hover{border-color:var(--primary);color:var(--primary)}
+.mode-toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border-radius:var(--radius-sm);background:var(--bg-secondary);cursor:pointer;border:1px solid var(--border);font-size:0.85rem;font-weight:600}
+.io-actions{display:flex;gap:8px;flex-wrap:wrap}
+.io-btn{flex:1;padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.75rem;font-weight:700;cursor:pointer;transition:var(--transition);font-family:inherit}
+.io-btn:hover{border-color:var(--primary);color:var(--primary)}
+.io-btn.danger{border-color:var(--error);color:var(--error);background:transparent}
+.io-btn.danger:hover{border-color:var(--error);color:#fff;background:var(--error)}
+.name-input{width:100%;padding:8px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:inherit;font-size:0.85rem}
+.name-input:focus{outline:none;border-color:var(--primary)}
+.progress-track{height:8px;background:var(--bg-secondary);border-radius:10px;overflow:hidden;margin:16px 0}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-dark));border-radius:10px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1)}
+.toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-120px);background:var(--primary);color:#fff;padding:14px 28px;border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);z-index:999;font-weight:700;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);font-size:0.9rem;max-width:90%}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{background:var(--success)}
+.toast.error{background:var(--error)}
+.save-indicator{position:fixed;bottom:24px;right:24px;background:var(--success);color:#fff;padding:8px 16px;border-radius:20px;font-size:0.75rem;font-weight:700;opacity:0;transition:opacity 0.3s;z-index:150;box-shadow:var(--shadow)}
+.save-indicator.show{opacity:1}
+.export-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:20px;padding-top:16px;border-top:1px dashed var(--border)}
+.export-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--radius-sm);background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;cursor:pointer;font-family:inherit;font-size:0.85rem;font-weight:700;transition:var(--transition);box-shadow:0 4px 12px rgba(5,150,105,0.25)}
+.export-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(5,150,105,0.35)}
+.video-link{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.88rem;box-shadow:0 4px 12px rgba(220,38,38,0.3);transition:var(--transition);margin:8px 0}
+.video-link:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(220,38,38,0.4)}
+.step-box{background:var(--info-bg);border-right:4px solid var(--info);padding:14px 18px;border-radius:var(--radius-sm);margin:10px 0;font-size:0.9rem;line-height:1.9}
+.step-box strong{color:var(--info)}
+.warning-box{background:var(--warning-bg);border-right:4px solid var(--warning);padding:14px 18px;border-radius:var(--radius-sm);margin:10px 0;font-size:0.9rem;line-height:1.9}
+.warning-box strong{color:var(--warning)}
+.success-box{background:var(--success-bg);border-right:4px solid var(--success);padding:14px 18px;border-radius:var(--radius-sm);margin:10px 0;font-size:0.9rem;line-height:1.9}
+.success-box strong{color:var(--success)}
+.drive-box{background:linear-gradient(135deg,rgba(66,133,244,0.08),rgba(52,168,83,0.08));border:2px dashed #4285F4;padding:24px;border-radius:var(--radius);text-align:center;margin:20px 0}
+.drive-box h3{color:#4285F4;margin-bottom:12px;font-size:1.15rem}
+.drive-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:#4285F4;color:#fff;border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:0.95rem;box-shadow:0 4px 12px rgba(66,133,244,0.3);transition:var(--transition);margin-top:12px}
+.drive-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(66,133,244,0.4)}
+.playlist-box{background:linear-gradient(135deg,rgba(220,38,38,0.08),rgba(183,147,90,0.08));border:2px solid #dc2626;border-radius:var(--radius);padding:20px;margin:16px 0;text-align:center}
+.playlist-box h4{color:#dc2626;font-size:1.05rem;margin-bottom:12px;font-weight:800}
+.playlist-box .playlist-url{font-family:'Consolas',monospace;font-size:0.78rem;color:var(--text-secondary);word-break:break-all;background:var(--bg);padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);margin-top:8px;direction:ltr;text-align:left}
+@media (max-width:900px){.sidebar{transform:translateX(100%)}.sidebar.open{transform:translateX(0);box-shadow:var(--shadow-lg)}.main{margin-right:0;padding:16px 16px 100px}.menu-toggle{display:flex}.page-title{font-size:1.05rem}.topic{padding:18px}.controls-widget{bottom:16px;left:16px}.uni-header{padding:22px}.uni-header .course-title{font-size:1.1rem}.uni-header .top-brand .avatar{width:50px;height:50px;font-size:1.3rem}.uni-header .top-brand .title-1{font-size:0.92rem}}
+@media (max-width:480px){.btn-row{flex-direction:column}.btn{width:100%}.score-box .score-num{font-size:2.5rem}.flash-grid{grid-template-columns:1fr}.flash-card{height:240px}.uni-header .top-brand{flex-direction:column;text-align:center}}
+.slide-up{animation:slideUp 0.5s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.divider{height:1px;background:var(--border);margin:32px 0}
+.unit-badge{display:inline-block;background:var(--primary-soft);color:var(--primary);padding:6px 16px;border-radius:20px;font-size:0.8rem;font-weight:800;margin-bottom:16px}
+@media print{.sidebar,.controls-widget,.menu-toggle,.toast,.save-indicator,.flash-controls,.export-actions,.top-bar{display:none !important}.main{margin:0;padding:0}body{background:#fff;color:#000;font-size:12pt}.topic,.question-block{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}h1,h2,h3{page-break-after:avoid}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="قائمة الوحدات">
+    <div class="sidebar-brand">
+      <div class="uni">🏛️ جامعة القدس المفتوحة</div>
+      <div class="fac">كلية العلوم الإدارية والاقتصادية</div>
+      <h1>🗄️ أنظمة قواعد البيانات</h1>
+      <div class="doctor">
+        إعداد المادة العلمية: أ. أنيس ربايعة
+        <span class="role">التصميم التعليمي ومدرس المقرر: د. ماجد حمايل</span>
+        <span class="role">مقرر 4643 — 2024</span>
+      </div>
+    </div>
+    <nav id="navContainer"></nav>
+    <div class="sidebar-footer">منصة تعليمية تفاعلية<br>حفظ تلقائي — بطاقات تعليمية — تصدير Excel</div>
+  </aside>
+
+  <main class="main" role="main">
+    <div class="uni-header">
+      <div class="top-brand">
+        <div class="avatar" aria-hidden="true">م.ح</div>
+        <div class="brand-text">
+          <div class="title-1">التصميم الإلكتروني — د. ماجد حمايل</div>
+          <div class="title-2">تخصص تقنية المعلومات والذكاء الاصطناعي</div>
+          <div class="title-3">خبير التحول الرقمي والتعلم المدمج</div>
+        </div>
+      </div>
+      <div class="uni-name">جامعة القدس المفتوحة</div>
+      <div class="fac-name">كلية العلوم الإدارية والاقتصادية</div>
+      <div class="course-title">🗄️ مقرر: أنظمة قواعد البيانات — Database Systems</div>
+      <div class="doctor-name">إعداد المادة العلمية والعملية: أ. أنيس ربايعة</div>
+      <div class="doctor-role">التصميم التعليمي ومدرس المقرر: د. ماجد حمايل<br>مقرر 4643 — 2024</div>
+    </div>
+    <div class="top-bar">
+      <button class="menu-toggle" onclick="toggleSidebar()" aria-label="فتح القائمة">☰</button>
+      <h2 class="page-title" id="pageTitle">الوحدة الأولى</h2>
+    </div>
+    <div id="content" role="region" aria-live="polite"></div>
+  </main>
+</div>
+
+<div class="controls-widget">
+  <div class="controls-panel" id="controlsPanel" role="dialog" aria-label="إعدادات العرض">
+    <div class="control-group">
+      <label>👤 اسم الطالب</label>
+      <input type="text" class="name-input" id="studentNameInput" placeholder="أدخل اسمك الكامل..." oninput="updateStudentName(this.value)">
+    </div>
+    <div class="control-group">
+      <label>🎨 لون الواجهة</label>
+      <div class="color-swatches">
+        <button class="swatch swatch-blue active" data-theme="blue" onclick="setTheme('blue')"></button>
+        <button class="swatch swatch-teal" data-theme="teal" onclick="setTheme('teal')"></button>
+        <button class="swatch swatch-indigo" data-theme="indigo" onclick="setTheme('indigo')"></button>
+        <button class="swatch swatch-orange" data-theme="orange" onclick="setTheme('orange')"></button>
+        <button class="swatch swatch-purple" data-theme="purple" onclick="setTheme('purple')"></button>
+        <button class="swatch swatch-green" data-theme="green" onclick="setTheme('green')"></button>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>🔤 حجم الخط</label>
+      <div class="font-controls">
+        <button class="font-btn" onclick="changeFontSize(-1)">−</button>
+        <span id="fontSizeDisplay" style="font-weight:700;min-width:40px;text-align:center;">16</span>
+        <button class="font-btn" onclick="changeFontSize(1)">+</button>
+      </div>
+    </div>
+    <div class="mode-toggle" onclick="toggleDark()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')toggleDark()">
+      <span id="darkLabel">🌙 الوضع الداكن</span>
+      <span id="darkIcon">⬜</span>
+    </div>
+    <div class="control-group">
+      <label>💾 إدارة التقدم</label>
+      <div class="io-actions">
+        <button class="io-btn" onclick="exportProgress()">📤 JSON</button>
+        <button class="io-btn" onclick="document.getElementById('importFile').click()">📥 استيراد</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importProgress(event)">
+      </div>
+      <div class="io-actions" style="margin-top:8px;">
+        <button class="io-btn danger" onclick="resetAll()">🗑️ إبدأ من جديد</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>📊 تصدير النتائج</label>
+      <div class="io-actions">
+        <button class="io-btn" onclick="exportAllToExcel()">📊 Excel شامل</button>
+      </div>
+    </div>
+  </div>
+  <button class="controls-toggle" onclick="toggleControls()" title="الإعدادات">⚙️</button>
+</div>
+
+<div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+<div class="save-indicator" id="saveIndicator">💾 تم الحفظ</div>
+
+<script>
+/* ======================= STORAGE ======================= */
+const STORAGE_KEY='qou_4643_db_course_v1';
+const defaultState={version:1,currentPage:'unit1',completedUnits:[],unitScores:{},unitAnswers:{},assessment:{tf:{},mcq:{},submitted:false,score:0},theme:'blue',dark:false,fontSize:16,studentName:'',lastSaved:null};
+let state=JSON.parse(JSON.stringify(defaultState));
+function safeSave(s){try{state.lastSaved=new Date().toISOString();localStorage.setItem(STORAGE_KEY,JSON.stringify(state));if(!s)flashSave();return true}catch(e){console.error(e);return false}}
+function saveState(s){return safeSave(s)}
+function loadState(){try{const r=localStorage.getItem(STORAGE_KEY);if(!r)return;const p=JSON.parse(r);if(p&&typeof p==='object'){state=Object.assign(JSON.parse(JSON.stringify(defaultState)),p);if(!state.assessment)state.assessment={tf:{},mcq:{},submitted:false,score:0};if(!Array.isArray(state.completedUnits))state.completedUnits=[]}}catch(e){state=JSON.parse(JSON.stringify(defaultState))}}
+function flashSave(){const el=document.getElementById('saveIndicator');if(!el)return;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1200)}
+function updateStudentName(v){state.studentName=v;saveState(true)}
+function exportProgress(){try{const b=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='db4643_progress_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(u);showToast('📤 تم تصدير التقدم','success')}catch(e){showToast('⚠️ تعذر التصدير','error')}}
+function importProgress(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(e){try{const p=JSON.parse(e.target.result);if(!p||typeof p!=='object')throw new Error('invalid');if(confirm('⚠️ سيتم استبدال التقدم الحالي. متأكد؟')){state=Object.assign(JSON.parse(JSON.stringify(defaultState)),p);saveState(true);applyPreferences();renderSidebar();renderContent();showToast('📥 تم الاستيراد','success')}}catch(err){showToast('⚠️ ملف غير صالح','error')}};r.readAsText(f);ev.target.value=''}
+
+/* ======================= RESET ALL ======================= */
+function resetAll(){
+  if(!confirm('🗑️ سيتم حذف جميع بياناتك نهائيًا:\n\n• التقدم في الوحدات\n• الإجابات والنتائج\n• اسم الطالب\n• الإعدادات\n\nهل أنت متأكد أنك تريد البدء من جديد؟')) return;
+  try{localStorage.removeItem(STORAGE_KEY)}catch(e){}
+  state=JSON.parse(JSON.stringify(defaultState));
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch(e){}
+  const imp=document.getElementById('importFile');if(imp)imp.value='';
+  const cp=document.getElementById('controlsPanel');if(cp)cp.classList.remove('open');
+  const sb=document.getElementById('sidebar');if(sb)sb.classList.remove('open');
+  applyPreferences();
+  renderSidebar();
+  renderContent();
+  window.scrollTo({top:0,behavior:'smooth'});
+  showToast('🗑️ تم حذف جميع البيانات — بداية جديدة','success');
+}
+
+/* ======================= EXCEL ======================= */
+function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function strip(s){return String(s||'').replace(/<[^>]*>/g,'').trim()}
+function buildSheet(rows,hr=1){let t='<table dir="rtl" cellspacing="0" cellpadding="4" border="1">';rows.forEach((row,ri)=>{t+='<tr>';row.forEach(c=>{const tag=ri<hr?'th':'td';t+=`<${tag} style="${ri<hr?'background:#1565C0;color:#fff;font-weight:bold;':''}border:1px solid #999;padding:6px;vertical-align:top;">${esc(c)}</${tag}>`});t+='</tr>'});t+='</table>';return t}
+function downloadExcel(fn,names,tables){let xml=`<xml><x:ExcelWorkbook><x:ExcelWorksheets>`;names.forEach(n=>{xml+=`<x:ExcelWorksheet><x:Name>${esc(n.slice(0,31))}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>`});xml+=`</x:ExcelWorksheets></x:ExcelWorkbook></xml>`;let html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8"><!--[if gte mso 9]>${xml}<![endif]--><style>body{font-family:'Segoe UI',Arial,sans-serif;direction:rtl}table{border-collapse:collapse;margin-bottom:20px}th,td{border:1px solid #999;padding:6px;vertical-align:top;font-size:12px}th{background:#1565C0;color:#fff;font-weight:bold}</style></head><body dir="rtl">`;tables.forEach(t=>{html+=t});html+=`</body></html>`;const blob=new Blob(['\ufeff',html],{type:'application/vnd.ms-excel;charset=utf-8'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u)}
+function getStudent(){return state.studentName&&state.studentName.trim()?state.studentName.trim():'طالب غير مُسمّى'}
+function buildUnitSheet(uid){const u=units.find(x=>x.id===uid);if(!u)return null;const ans=state.unitAnswers[uid]||{};const sc=state.unitScores[uid]||0;const L=['أ','ب','ج','د'];const rows=[];rows.push(['جامعة القدس المفتوحة — كلية العلوم الإدارية والاقتصادية']);rows.push(['مقرر: أنظمة قواعد البيانات — 4643']);rows.push(['']);rows.push(['اسم الطالب:',getStudent()]);rows.push(['الوحدة:',strip(u.title)]);rows.push(['النتيجة:',sc+'%']);rows.push(['']);rows.push(['رقم','السؤال','إجابة الطالب','الإجابة الصحيحة','النتيجة']);u.questions.forEach((q,i)=>{const sa=ans[i];const st=(sa!==undefined&&sa!==null)?L[sa]+') '+strip(q.options[sa]):'(لم يجب)';const ct=L[q.correct]+') '+strip(q.options[q.correct]);rows.push([String(i+1),strip(q.q),st,ct,sa===q.correct?'✔ صحيح':'✘ خطأ'])});return buildSheet(rows,7)}
+function buildFlashSheet(uid){const u=units.find(x=>x.id===uid);if(!u||!u.flashCards)return null;const rows=[];rows.push(['بطاقات الفلاش — '+strip(u.title)]);rows.push(['']);rows.push(['#','السؤال','الإجابة']);u.flashCards.forEach((fc,i)=>{rows.push([String(i+1),strip(fc.q),strip(fc.a)])});return buildSheet(rows,3)}
+function exportAllToExcel(){try{const cu=state.completedUnits;if(cu.length===0){showToast('⚠️ لم تُنجز أي وحدة','error');return}const names=[];const tables=[];const sum=[];sum.push(['جامعة القدس المفتوحة — كلية العلوم الإدارية والاقتصادية']);sum.push(['مقرر: أنظمة قواعد البيانات — 4643']);sum.push(['']);sum.push(['اسم الطالب:',getStudent()]);sum.push(['']);sum.push(['الوحدة','الحالة','النتيجة']);units.forEach(u=>{const done=cu.includes(u.id);const sc=state.unitScores[u.id]||0;sum.push([strip(u.shortTitle),done?'مكتملة':'غير مكتملة',done?String(sc):'—'])});names.push('الملخص');tables.push(buildSheet(sum,5));cu.sort((a,b)=>a-b).forEach(uid=>{const s=buildUnitSheet(uid);if(s){names.push('وحدة '+uid);tables.push(s)}const fs=buildFlashSheet(uid);if(fs){names.push('بطاقات '+uid);tables.push(fs)}});const fn=`db4643_all_${(state.studentName||'student').replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.xls`;downloadExcel(fn,names,tables);showToast('📊 تم التصدير الشامل','success')}catch(e){showToast('⚠️ خطأ','error')}}
+
+/* ======================= DATA ======================= */
+const units=[
+{id:1,title:'الوحدة الأولى: مقدمة في أنظمة قواعد البيانات',shortTitle:'الوحدة 1: مقدمة في قواعد البيانات',badge:'الوحدة الأولى — CLO1, CLO2',topics:[
+{title:'1. ماهية قاعدة البيانات',paragraphs:['تُعرَّف قاعدة البيانات (Database) على أنها مجموعة منتظمة ومخزنة إلكترونيًا من البيانات، ويمكن أن تحتوي على أي نوع من البيانات، بما في ذلك الكلمات والأرقام والصور ومقاطع الفيديو والملفات.','يمكنك استخدام برنامج يسمى نظام إدارة قواعد البيانات (DBMS) لتخزين البيانات واستردادها وتحريكها في أنظمة الكمبيوتر.']},
+{title:'2. أهمية قاعدة البيانات',paragraphs:['تعد قاعدة البيانات عالية الأداء أمرًا بالغ الأهمية لأي منظمة. حيث إن قواعد البيانات تدعم العمليات الداخلية للشركات وتدعم تفاعلات المتجر مع العملاء والموردين. كما أنها تحتوي أيضًا على معلومات إدارية وبيانات أكثر تخصصًا، مثل النماذج الهندسية أو الاقتصادية.','من الأمثلة على ذلك أنظمة المكتبات الرقمية وأنظمة حجز السفر وأنظمة المخزون.'],list:['<strong>1) الكفاءة في التوسع:</strong> يمكن لتطبيقات قواعد البيانات إدارة كميات كبيرة من البيانات، والتوسع لتستوعب الملايين والمليارات وأكثر من ذلك.','<strong>2) تكامل البيانات:</strong> حيث تتضمن قواعد البيانات في الغالب قواعد وشروط مضمنة الغرض منها الحفاظ على تناسق البيانات.','<strong>3) أمان البيانات:</strong> تدعم قواعد البيانات متطلبات الخصوصية والامتثال المرتبطة بأي بيانات.','<strong>4) تحليلات البيانات:</strong> تستخدم الأنظمة البرمجية الحديثة قواعد البيانات في تحليل البيانات، حيث يمكن لهذه الأنظمة تحديد الاتجاهات والأنماط أو وضع التنبؤات.']},
+{title:'3. تصنيف قواعد البيانات',paragraphs:['يمكن تصنيف قواعد البيانات وفقًا لحالة الاستخدام ونوع البيانات وطريقة تخزين البيانات. فيما يلي ثلاثة أمثلة لطرق تصنيف قواعد البيانات:'],list:['<strong>حسب محتوياتها:</strong> مثل نص المستند أو الإحصائيات أو كائنات الوسائط المتعددة.','<strong>حسب مجال تطبيقها:</strong> مثل المحاسبة أو الأقلام أو التصنيع.','<strong>حسب جوانبها التقنية:</strong> مثل بنية قاعدة البيانات أو نوع الواجهة.']},
+{title:'4. نموذج قاعدة البيانات',paragraphs:['يعرض نموذج قاعدة البيانات البنية المنطقية لقاعدة البيانات، وهي تحدد العلاقات والقواعد التي تحدد كيفية تخزين البيانات وتنظيمها ومعالجتها، حيث إن كل تطبيق قاعدة بيانات مبني على نموذج بيانات محدد.','يتم تصميم نماذج قواعد بيانات فردية بناءً على قواعد ومفاهيم نموذج البيانات الأوسع الذي يتبناه التطبيق الأساسي.']},
+{title:'5. تطور قواعد البيانات',paragraphs:['كانت أقدم قواعد البيانات عبارة عن أشرطة مغناطيسية عليها سجلات بيانات مخزنة بالتسلسل. ومع التقدم التكنولوجي، استمرت قواعد البيانات في التطور. لقد أصبحت الآن أنظمة معقدة وعالية الأداء ويتوفر مجال دراسة مخصص لها.'],list:['<strong>1) قاعدة بيانات هرمية:</strong> أصبحت قواعد البيانات الهرمية شائعة في السبعينيات. بدلاً من تخزين مجالات البيانات بالتسلسل، احتفظت قواعد البيانات بالسجلات في بنية تجريبية، مما أدى إلى إنشاء علاقة أصل وفرع بين ملفين.','<strong>2) قاعدة بيانات الشبكة:</strong> سمحت قاعدة بيانات نموذج بيانات الشبكة لسجل فرعي واحد أن يكون له عدة مجالات رئيسية والعكس صحيح.','<strong>3) قاعدة البيانات العلائقية:</strong> في الثمانينيات، ظهرت قاعدة البيانات العلائقية كنموذج مؤسسة شائع نظرًا لما ينتج به من إنتاجية ومرونة وتوافق مع الأجهزة الأسرع.','<strong>4) قاعدة البيانات الموجهة للكائنات:</strong> تطورت قواعد البيانات الموجهة للكائنات في التسعينيات استجابةً لظهور البرمجة الموجهة للكائنات.','<strong>5) قاعدة بيانات NoSQL:</strong> تم إنشاء قواعد بيانات NoSQL في بداية القرن الحادي والعشرين عندما ظهرت حوسبة المجموعات (الحوسبة العنقودية) وبنيات قواعد البيانات الموزعة.']},
+{title:'6. قواعد البيانات الحديثة',paragraphs:['تطورت قواعد البيانات المستخدمة اليوم بحيث توسع نطاقها رأسيًا وأفقيًا، وبات بإمكانها تخزين بيانات ضخمة في السحابة وتوفير واجهات برمجية متقدمة لتعمل الآلة وتحليلات البيانات الأخرى. ومن أهم قواعد البيانات الحديثة:'],list:['<strong>1) قاعدة البيانات السحابية:</strong> يمكن للمستخدمين تشغيل قواعد البيانات على السحابة بشكل مستقل أو شراء إمكانية وصول من أحد موفري قواعد البيانات السحابية.','<strong>2) قاعدة البيانات الرسومية:</strong> قواعد البيانات الرسومية مفيدة لأنها تعطي الأولوية للعلاقات بين سجلات البيانات المختلفة. تتكون من العقد والحواف.','<strong>3) قاعدة البيانات داخل الذاكرة:</strong> في حين أن معظم قواعد البيانات يتم تخزينها على أجهزة تخزين خارجية، إلا أن قاعدة البيانات داخل الذاكرة يتم تخزينها في الذاكرة الداخلية للحاسوب.']},
+{title:'7. مخزن البيانات (Data Warehouse)',paragraphs:['مخزن البيانات هو مصطلح واسع يشير إلى مستودع البيانات الكبير جدًا بأي مؤسسة. بحيث تنج المنظمات جميع أنواع البيانات، بما فيها الملفات والمستندات ومقاطع الفيديو وبيانات العملاء وبيانات التطبيق وبيانات النظام.','تستخدم المنظمات مخزن البيانات في معالجة جميع بياناتها وتخزينها، حيث تُستخدمه في التحليلات والتطبيقات واتخاذ القرارات المستندة إلى البيانات.','<strong>Amazon Redshift</strong> عبارة عن مستودع بيانات مُدار بالكامل، يتسع لكم من البيانات يُقاس بالبيتابايت في السحابة.']},
+{title:'8. قواعد بيانات حوسبة AWS',paragraphs:['توفر قواعد بيانات حوسبة AWS مجموعة واسعة من قواعد البيانات المبنية لغرض معين لأي مؤسسة. تدعم قواعد بيانات AWS جميع مهام إدارة قواعد البيانات، مثل توفير الخوادم والتصحيح والتكوين والنسخ الاحتياطية.','وفيما يلي بعض الأمثلة على خدمات قواعد بيانات AWS:'],list:['<strong>Amazon Relational Database Service (Amazon RDS):</strong> هي خدمة مُدارة تُيسّر إعداد قاعدة البيانات العلائقية وتشغيلها وتوسيع نطاقها في السحابة.','<strong>Amazon Aurora:</strong> هي قاعدة بيانات علائقية مصممة للسحابة. وباعتبارها خدمة مُدارة بالكامل، فإنها تعمل على أتمتة المهام التي تستغرق وقتًا طويلًا مثل التزويد والتصحيح والنسخ الاحتياطي والتعافي.','<strong>Amazon Neptune:</strong> هي قاعدة بيانات موجهة للرسوم البيانية يمكنها تنفيذ أكثر من 100000 استعلام في الثانية.','<strong>Amazon Redshift:</strong> عبارة عن مستودع بيانات مُدار بالكامل، يتسع لكم من البيانات يُقاس بالبيتابايت في السحابة.','<strong>Amazon ElastiCache:</strong> هي قاعدة بيانات NoSQL في الذاكرة مُدارة بالكامل وقابلة للتوسع وآمنة.']},
+{title:'9. لغة الاستعلام المُركّبة (SQL)',paragraphs:['SQL هي لغة برمجة تستخدمها تقريبًا كل قواعد البيانات العلائقية للاستعلام عن البيانات ومعالجتها وتعريفها، ولتوفير التحكم في الوصول.','طُوّرت SQL للمرة الأولى في شركة IBM في السبعينيات، وكانت Oracle مساهمًا رئيسيًا فيها، وهو ما أدى إلى تنفيذ معيار ANSI SQL، حيث دفعت SQL الكثير من التوسعات من شركات مثل IBM وOracle وMicrosoft.','بالرغم من أن SQL لا تزال واسعة الاستخدام اليوم، فإن لغات البرمجة الجديدة آخذة في الظهور.']},
+{title:'10. الفرق بين قاعدة البيانات وجدول البيانات',paragraphs:['قواعد البيانات وجداول البيانات (مثل Microsoft Excel) كلاهما وسيلتان مرنتان لتخزين المعلومات، والفرق الرئيسي بينهما هو:'],list:['<strong>طريقة تخزين البيانات ومعالجتها.</strong>','<strong>الأشخاص الذين يمكنهم الوصول إلى البيانات.</strong>','<strong>مقدار البيانات التي يمكن تخزينها.</strong>','تم تصميم جداول البيانات في الأصل لمستخدم واحد، وتعكس خصائصها ذلك. حيث إنها تعد خيارًا رائعًا للمستخدم الفرد أو لعدد صغير من المستخدمين الذين لا يحتاجون إلى الكثير من المعالجة المُقدَّدة.','من الجهة الأخرى، تم تصميم قواعد البيانات للعديد من المستخدمين في الوقت نفسه، وتسمح بالوصول إلى البيانات والاستعلام عنها بسرعة وأمان باستخدام منطق ولغة معقدين للغاية.']},
+{title:'11. أنواع قواعد البيانات',paragraphs:['هناك العديد من الأنواع المختلفة من قواعد البيانات، وتعتمد قاعدة البيانات الأفضل لمؤسسة معينة على الكيفية التي تنوي بها المؤسسة استخدام البيانات. ومن أهمها:'],list:['<strong>1) قواعد البيانات العلائقية (Relational Databases):</strong> هي نوع من قواعد البيانات التي تنظّم البيانات في جداول (Tables) تحتوي على صفوف وأعمدة. كل جدول يمثل مجموعة من الكيانات (Entities)، وكل عمود يمثل سمة (Attribute) للكيان، بينما يمثل كل صف سجل بيانات (Record).','<strong>أهم ما يميز قواعد البيانات العلائقية:</strong> العلاقات بين الجداول: تعتمد على إنشاء علاقات بين الجداول باستخدام مفاتيح رئيسية (Primary Keys) ومفاتيح خارجية (Foreign Keys).','<strong>لغة الاستعلامات الهيكلية (SQL):</strong> تستخدم SQL كأداة أساسية لإدارة البيانات.','<strong>السلامة والاتساق:</strong> توفر قواعد البيانات العلائقية آليات لضمان سلامة البيانات واتساقها.','<strong>المرونة في الاستعلامات:</strong> يمكن للمستخدمين تنفيذ استعلامات معقدة على البيانات من خلال الربط بين الجداول المختلفة.','<strong>قابلية التوسع والموثوقية:</strong> صُممت قواعد البيانات العلائقية لتكون قابلة للتوسع وتحمل أعباء العمل الكبيرة.']},
+{title:'12. قواعد البيانات كائنية التوجه (Object-Oriented Databases)',paragraphs:['قواعد البيانات كائنية التوجه (Object-Oriented Databases) هي نوع من قواعد البيانات التي تعتمد على المفاهيم الكائنية (Object-Oriented Concepts) لتنظيم وتخزين البيانات. حيث يتم تمثيل البيانات في هذه القواعد على شكل كائنات (Objects) تشبه الكائنات في لغات البرمجة الكائنية مثل Java أو C++.','<strong>أهم ما يميز قواعد البيانات كائنية التوجه:</strong> تمثيل البيانات ككائنات، الدعم الكامل للوراثة، التغليف، التعامل مع البيانات المعقدة، التكامل مع لغات البرمجة الكائنية، تجنب عدم التوافق بين النموذجين الكائني والعلائقي.','<strong>مفيدة بشكل خاص في التطبيقات التي تتطلب تمثيل البيانات المعقدة،</strong> مثل تطبيقات التصميم بمساعدة الحاسوب (CAD)، والنظم الجغرافية، وبعض نظم المعلومات المعتمدة على الرسوم البيانية.']},
+{title:'13. قواعد البيانات الموزعة (Distributed Databases)',paragraphs:['قواعد البيانات الموزعة (Distributed Databases) هي نوع من قواعد البيانات حيث يتم توزيع البيانات عبر مواقع جغرافية متعددة أو أنظمة حاسوبية مختلفة، ولكنها تُدار كوحدة واحدة.'],list:['<strong>توزيع البيانات:</strong> يتم تخزين البيانات في مواقع متعددة بدلاً من مكان مركزي واحد.','<strong>الشفافية:</strong> يوفر النظام للمستخدمين شفافية كاملة، حيث يتم التعامل مع البيانات كأنها مخزنة في مكان واحد.','<strong>تحسين الأداء:</strong> يؤدي توزيع البيانات إلى تقليل الحمل على الخادم المركزي وتحسين سرعة الاستعلامات.','<strong>التكرار والموثوقية:</strong> تعتمد قواعد البيانات الموزعة على التكرار، حيث يتم نسخ البيانات إلى مواقع متعددة.','<strong>التوازي:</strong> يمكن تنفيذ العمليات على البيانات في مواقع متعددة بشكل متوازٍ.','<strong>القابلية للتوسع:</strong> يسهل توسيع قواعد البيانات الموزعة بإضافة مواقع أو خوادم جديدة.','<strong>التحديات:</strong> تتطلب إدارة معقدة للتنسيق بين المواقع المختلفة، وتواجه تحديات مثل الاتساق، التزامن، وتأخر الشبكة.']},
+{title:'14. مستودعات البيانات (Data Warehouses)',paragraphs:['مستودع البيانات هو نظام تخزين مركزي يهدف إلى تجميع البيانات من مصادر متعددة داخل المؤسسة وتحويلها إلى شكل مناسب للتحليل واتخاذ القرارات.','يستخدم مستودع البيانات لتحليل كميات هائلة من البيانات واستخراج المعلومات ذات القيمة. يتميز بكونه يدعم الاستعلامات التحليلية المعقدة دون التأثير على أداء أنظمة التشغيل اليومية.'],list:['<strong>استخدامات مستودعات البيانات:</strong> تحليل الأعمال والتقارير، التنقيب في البيانات (Data Mining)، التنبؤ والاتجاهات المستقبلية، دمج البيانات المؤسسية.','<strong>فوائد مستودعات البيانات:</strong> تحسين جودة البيانات، زيادة كفاءة التحليل، دعم اتخاذ القرار المبني على البيانات.','<strong>تحديات مستودعات البيانات:</strong> التكلفة، التعقيد الفني، إدارة التحديثات والبيانات المتغيرة.']},
+{title:'15. قواعد بيانات NoSQL',paragraphs:['إن قواعد بيانات NoSQL هي نوع من قواعد البيانات المصممة للتعامل مع كميات كبيرة من البيانات غير المنظمة أو شبه المنظمة. تختلف عن قواعد البيانات العلائقية التقليدية من حيث الهيكل والمرونة، مما يجعلها مناسبة لتطبيقات معينة تتطلب أداءً عاليًا وتوسعية.','<strong>الميزات الرئيسية لـ NoSQL:</strong>'],list:['<strong>1) نموذج بيانات مرن:</strong> لا تتطلب NoSQL بنية ثابتة للمخطط، مما يسمح بتخزين أنواع مختلفة من البيانات في نفس المجموعة.','<strong>2) الأداء العالي:</strong> تعتبر قواعد NoSQL أسرع في معالجة كميات هائلة من البيانات وتستجيب بسرعة للطلبات في التطبيقات ذات الأعداد الكبيرة من المستخدمين.','<strong>3) التسامح مع الأخطاء والاتاحة العالية:</strong> تعتمد العديد من قواعد بيانات NoSQL على النماذج التي تضمن التكرار التلقائي للبيانات عبر خوادم متعددة.','<strong>4) المرونة في التحديث والتعديل:</strong> توفر NoSQL مرونة أكبر في التعامل مع التغييرات السريعة في هياكل البيانات.','<strong>5) مناسبة لتطبيقات معينة:</strong> تُستخدم NoSQL بشكل واسع في التطبيقات التي تتطلب معالجة بيانات كبيرة ومتنوعة، مثل إدارة المحتوى، منصات التواصل الاجتماعي، التجارة الإلكترونية، وتحليلات البيانات الضخمة.']},
+{title:'16. قواعد بيانات الرسوم البيانية (Graph Databases)',paragraphs:['قواعد بيانات الرسوم البيانية (Graph Databases) هي نوع متخصص من قواعد البيانات مصممة لتمثيل العلاقات المعقدة بين البيانات بشكل هيكلي يعتمد على نظرية الرسوم البيانية. في هذه القواعد، تُخزَّن البيانات على شكل عُقد (Nodes) ترتبط ببعضها البعض عبر روابط (Edges).'],list:['<strong>1) تمثيل العلاقات المعقدة:</strong> تتيح تمثيل العلاقات بين البيانات بطريقة طبيعية وسهلة الفهم.','<strong>2) استعلامات فعالة على العلاقات:</strong> تعتبر فعالة جدًا في تنفيذ الاستعلامات المتعلقة بالمسارات أو الروابط بين الكيانات.','<strong>3) المرونة في إضافة العلاقات:</strong> تتيح إضافة علاقات جديدة بسهولة بين الكيانات دون الحاجة إلى تعديل هيكل قاعدة البيانات.','<strong>4) أداء عالي في التطبيقات المعتمدة على العلاقات:</strong> مصممة لتقديم أداء عالٍ في التطبيقات التي تعتمد بشكل كبير على العلاقات المعقدة.','<strong>5) إدارة البيانات غير المنظمة:</strong> يمكن لقواعد بيانات الرسوم البيانية التعامل مع بيانات غير منظمة أو شبه منظمة.','<strong>6) استخدامات متعددة:</strong> تُستخدم في تطبيقات مثل الشبكات الاجتماعية، إدارة سلسلة التوريد، أنظمة التوصية، وتحليل الاحتيال.']},
+{title:'17. قواعد بيانات OLTP',paragraphs:['قاعدة بيانات OLTP (Online Transaction Processing) هي قاعدة بيانات سريعة وتحليلية مصممة لعدد كبير من المعاملات التي يتم إجراؤها عن طريق مستخدمين متعددين.','هناك فقط بضع عشرات من قواعد البيانات العديدة التي تُستخدم اليوم. وأخرى، وهي قواعد بيانات أقل شيوعًا، وتُخصص لوظائف علمية أو مالية أو وظائف أخرى محددة للغاية.','وعلاوةً على أنواع قواعد البيانات المختلفة، تمثل التغييرات التي تطرأ على طرق تطوير التقنية والتطورات المثيرة، مثل السحابة والأئمّة، عامل دفع لقواعد البيانات في اتجاهات جديدة كليًّا.']},
+{title:'18. قواعد البيانات مفتوحة المصدر',paragraphs:['قواعد البيانات مفتوحة المصدر هي قواعد بيانات يتم توزيعها وتطويرها تحت تراخيص مفتوحة المصدر، مما يعني أن شفرة المصدر الخاصة بها متاحة للمستخدمين للاطلاع عليها، تعديلها، وتوزيعها بحرية. تستخدم هذه القواعد على نطاق واسع في مختلف المجالات بسبب مرونتها، تكلفتها المنخفضة، ودعم المجتمع الكبير.'],list:['<strong>1) التكلفة المنخفضة:</strong> بما أن هذه القواعد متاحة مجانًا، فهي توفر بديلاً اقتصاديًا للشركات والمؤسسات.','<strong>2) مرونة التخصيص:</strong> يمكن للمستخدمين تعديل وتخصيص شفرة المصدر لتلبية احتياجاتهم الخاصة.','<strong>3) دعم المجتمع:</strong> تحظى بدعم كبير من مجتمع من المطورين والمستخدمين.','<strong>4) الابتكار السريع:</strong> بفضل مشاركة مجتمع المطورين العالمي، تطور قواعد البيانات مفتوحة المصدر بسرعة.','<strong>5) التوافق مع المعايير:</strong> غالبًا ما تلتزم بالمعايير الدولية، مما يسهل التكامل مع الأنظمة الأخرى.','<strong>6) الاستقلالية عن البائعين:</strong> عدم الاعتماد على بائع معين يعني أن المستخدمين لا يقيّدون بتغييرات في سياسة التسعير.']},
+{title:'19. قواعد بيانات السحابة',paragraphs:['قاعدة بيانات السحابة هي مجموعة من البيانات، سواء أكانت منظّمة أو غير منظّمة، توجد على نظام أساسي خاص أو عام أو مختلط للحوسبة السحابية.','<strong>نماذج قواعد البيانات السحابية:</strong> التقليدية وقاعدة البيانات كخدمة (DBaaS). يمكن تنفيذ المهام الإدارية وأعمال الصيانة عن طريق موفر خدمة.']},
+{title:'20. قواعد البيانات متعددة النماذج',paragraphs:['تجمع قواعد البيانات متعددة النماذج نوعين مختلفين من نماذج قواعد البيانات في خادم واحد ومدمج، يعني هذا أنها قادرة على استيعاب أنواع متعددة من البيانات.']},
+{title:'21. قواعد بيانات المستندات JSON',paragraphs:['قواعد بيانات المستندات (Document Databases) هي نوع من قواعد البيانات NoSQL التي تخزن البيانات في شكل مستندات، وعادةً ما تكون هذه المستندات بتنسيق JSON (JavaScript Object Notation). توفر هذه القواعد مرونة كبيرة في تخزين البيانات غير المنظمة أو شبه المنظمة، مما يجعلها مناسبة لمجموعة واسعة من التطبيقات الحديثة.'],list:['<strong>مرونة الهيكل:</strong> كل وثيقة يمكن أن تحتوي على مجموعة مختلفة من الحقول.','<strong>قابلية التوسع:</strong> يمكن توزيع الوثائق عبر عدة خوادم بشكل أفقي.','<strong>سهولة الاستخدام:</strong> نظرًا لأن الوثائق تشبه الهياكل المستخدمة في لغات البرمجة الحديثة.','<strong>سهولة الاستعلامات:</strong> يمكن للمستخدمين تنفيذ استعلامات معقدة على المستندات.','<strong>التوسع الأفقي:</strong> يمكن لقواعد بيانات المستندات التوسع أفقيًا بسهولة.','<strong>أمثلة شائعة:</strong> MongoDB, CouchDB, Amazon DocumentDB.']},
+{title:'22. قواعد البيانات ذاتية التوجيه (Autonomous Databases)',paragraphs:['قواعد البيانات ذاتية التوجيه (Autonomous Databases) هي نوع من قواعد البيانات التي تستخدم تقنيات الذكاء الاصطناعي والتعلم الآلي لأتمتة العديد من العمليات الإدارية المعقدة والتي عادة ما تتطلب تدخل بشري. تشمل هذه العمليات مهام مثل التكوين، والتحسين، والتحديث، والمراقبة، وتصحيح الأخطاء، والتأمين.'],list:['<strong>التشغيل التلقائي:</strong> تستطيع إدارة نفسها بشكل ذاتي دون تدخل بشري.','<strong>التحسين الذاتي:</strong> تستطيع تحسين الأداء تلقائيًا من خلال ضبط المعلمات والمراقبة المستمرة للأنظمة.','<strong>التوسع الذاتي:</strong> تستطيع التكيف مع زيادة الأحمال والعملاء تلقائيًا دون الحاجة إلى إعادة ضبط يدوي.','تعتبر قواعد البيانات ذاتية التوجيه مفيدة جدًا للشركات الكبيرة والصغيرة لأنها توفر الوقت وتقلل من الحاجة إلى فرق إدارة قواعد البيانات الكبيرة.']},
+{title:'23. المقصود ببرامج قاعدة البيانات',paragraphs:['برامج قاعدة البيانات هي تطبيقات تُستخدم لإنشاء وإدارة قواعد البيانات، قاعدة البيانات هي مجموعة منظمة من البيانات التي يمكن تخزينها واسترجاعها بشكل فعال. البرامج الخاصة بقاعدة البيانات تساعد في إدارة هذه البيانات بطرق مختلفة، مثل:'],list:['<strong>1) تخزين البيانات:</strong> حفظ المعلومات بشكل منظم بحيث يمكن الوصول إليها بسهولة.','<strong>2) استرجاع البيانات:</strong> استعلام واسترجاع المعلومات بناءً على معايير محددة.','<strong>3) تحديث البيانات:</strong> تعديل البيانات وتحديثها وفقًا لاحتياجات المستخدم.','<strong>4) حذف البيانات:</strong> إزالة المعلومات التي لم تعد ضرورية.','<strong>5) إدارة الوصول:</strong> تحديد من يمكنه الوصول إلى البيانات وكيفية استخدامه لها.']},
+{title:'24. نظام إدارة قواعد البيانات (DBMS)',paragraphs:['نظام إدارة قواعد البيانات (DBMS) هو برنامج كمبيوتر يُستخدم لإنشاء وإدارة قواعد البيانات. يقوم DBMS بتوفير الأدوات والوظائف اللازمة لتخزين وتنظيم واسترجاع البيانات بشكل فعال وآمن. يُعتبر DBMS الوسيط بين المستخدمين أو التطبيقات وقاعدة البيانات.'],list:['<strong>1) تخزين البيانات:</strong> يوفر DBMS بنية لتنظيم البيانات بشكل منظم في جداول أو هياكل أخرى حسب نوع النظام.','<strong>2) استرجاع البيانات:</strong> يوفر أدوات لاستعلام واسترجاع البيانات بناءً على معايير محددة.','<strong>3) تحديث البيانات:</strong> يمكن للمستخدمين إدخال وتحديث وحذف البيانات بسهولة.','<strong>4) إدارة الوصول:</strong> يتحكم DBMS في الوصول إلى البيانات من خلال تحديد من يمكنه الاطلاع على البيانات وتعديلها.','<strong>5) الحفاظ على النزاهة:</strong> يتأكد DBMS من أن البيانات تظل دقيقة ومتسقة.','<strong>6) النسخ الاحتياطي والاسترداد:</strong> يقدم DBMS أدوات للنسخ الاحتياطي للبيانات واستعادتها.','<strong>7) الأمان:</strong> يوفر DBMS ميزات حماية لضمان عدم الوصول غير المصرح به إلى البيانات.']},
+{title:'25. المقصود بـ MySQL Database',paragraphs:['MySQL هو نظام مفتوح المصدر لإدارة قواعد البيانات العلائقية ويستند إلى SQL. وقد تم تصميمه وتحسينه لتطبيقات الويب ويمكنه العمل على أي نظام أساسي. وعندما نشأت متطلبات جديدة ومختلفة مع ظهور الإنترنت، أصبح MySQL النظام الأساسي المفضل لمطوري الويب والتطبيقات المستندة إلى الويب.','MySQL هو نظام DBMS الذي يمثل الأساس لأشهر مواقع الويب والتطبيقات المستندة إلى الويب في العالم، بما في ذلك Airbnb وUber وLinkedIn وFacebook وTwitter وYouTube.']},
+{title:'26. استخدام قواعد البيانات لتحسين أداء الأعمال واتخاذ القرارات',paragraphs:['مع نجاح مجموعة البيانات الهائلة من Internet of Things في إحداث تحولات جذرية في الحياة والصناعة عبر العالم، تمتلك الشركات اليوم قدرًا أكبر من البيانات عن ذي قبل. والآن بات بإمكان المؤسسات ذات الفكر التقدمي استخدام قواعد البيانات لتجاوز حدود التخزين الأساسي للبيانات والمعاملات لتحليل كميات كبيرة من البيانات المستمدة من أنظمة متعددة.','باستخدام أدوات قواعد البيانات وغيرها من أدوات الحوسبة والتحليل الذكي للأعمال، يمكن للمؤسسات الآن الاستفادة من البيانات التي تجمعها للتشغيل على نحو أكثر فاعلية، وتمكين مستوى أفضل من اتخاذ القرارات والتحلي بسرعة وقابلية توسيع أكبر.','ويُعد تحسين الوصول والإنتاجية إلى البيانات أمرًا بالغ الأهمية للشركات في الوقت الحالي نظرًا لوجود المزيد من البيانات المطلوب تتبعه، من المهم توفير منصة تمكّنها توفير الأداء والنطاق والسرعة التي تحتاج إليها الشركات مع نموها بمرور الوقت.','تتيح قواعد البيانات ذاتية التوجيه التوازن اللازم لإحداث تعزيز ملحوظ لهذه الإمكانات. ولأن قواعد البيانات ذاتية التوجيه تؤمّت العمليات اليدوية باهظة التكلفة والمستهلكة للوقت، فهي تحرر مستخدمي الشركات بحيث يصبحون أكثر قدرة على اتخاذ إجراءات استباقية نحو بياناتهم.']},
+{title:'27. تحديات قواعد البيانات',paragraphs:['غالبًا تدعم قواعد بيانات المؤسسات الكبيرة المعاصرة استعلامات معقدة للغاية ويُتوقّع منها توفير استجابة فورية تقريبًا لهذه الاستعلامات. ونتيجة لذلك، أصبح مسؤولو قواعد البيانات مطالبين بتوظيف مجموعة واسعة من الوسائل للمساعدة على تحسين الأداء. تشمل بعض التحديات التي يواجهونها:'],list:['<strong>استيعاب الزيادات الكبيرة في حجم البيانات:</strong> الزيادة المفاجئة في البيانات القادمة من أجهزة الاستشعار والأجهزة المترابطة والعشرات من المصادر الأخرى.','<strong>ضمان أمان البيانات:</strong> تحدث خروقات البيانات في كل مكان في هذه الأيام، وأصبح المتطلعون أكثر قدرة على الابتكار بشكل مستمر.','<strong>مواكبة الطلب:</strong> في بيئة العمل المعاصرة ذات الحركة السريعة، تحتاج الشركات إلى وصول في الوقت الفعلي إلى بياناتها لدعم اتخاذ القرار في الوقت المناسب.','<strong>إدارة قواعد البيانات والبنية التحتية وصيانتها:</strong> يجب على مسؤولي قواعد البيانات مراقبة قواعد البيانات بشكل مستمر لتعقب المشاكل وتنفيذ أعمال الصيانة الوقائية.','<strong>إزالة قيود قابلية التوسيع:</strong> تحتاج أي شركة إلى أن تنمو إذا كانت تنوي البقاء في حلبة المنافسة، ويجب أن يواكب نموها هذا نموًّا في إدارة بياناتها.','<strong>ضمان موقع البيانات أو سيادة البيانات أو متطلبات زمن الوصول:</strong> تمتلك بعض المنظمات حالات استخدام تلائم بشكل أفضل تشغيل الأنظمة المحلية.']}],
+questions:[
+{q:'أي من الخيارات التالية يصف مفهوم قاعدة البيانات؟',options:['مجموعة غير منظمة من البيانات.','مجموعة منظمة ومخزنة إلكترونيًا من البيانات.','ملفات نصية مخزنة يدويًا.','برنامج لتصفح الإنترنت.'],correct:1},
+{q:'أي نموذج من نماذج قواعد البيانات يعتمد على العلاقة بين الجداول؟',options:['قاعدة بيانات هرمية','قاعدة بيانات الشبكة','قاعدة البيانات العلائقية','قاعدة بيانات المستندات'],correct:2},
+{q:'ما هو الغرض الأساسي من نظام إدارة قواعد البيانات (DBMS)؟',options:['عرض البيانات فقط','تخزين البيانات واسترجاعها وتعديلها','حماية البيانات من التعديل فقط','تصميم واجهات المستخدم'],correct:1},
+{q:'من خصائص قواعد البيانات العلائقية؟',options:['عدم استخدام الجداول','استخدام المفاتيح الأساسية والخارجية','عدم دعم SQL','لا يمكن التوسع'],correct:1},
+{q:'أي من التالي يُعد من قواعد البيانات الحديثة؟',options:['قواعد البيانات السحابية','قواعد البيانات الرسومية','قواعد البيانات داخل الذاكرة','جميع ما ذُكر'],correct:3}],
+flashCards:[
+{q:'ما هي قاعدة البيانات (Database)؟',a:'مجموعة منتظمة ومخزنة إلكترونيًا من البيانات، ويمكن أن تحتوي على أي نوع من البيانات، بما في ذلك الكلمات والأرقام والصور ومقاطع الفيديو والملفات.'},
+{q:'ما هي أهمية قواعد البيانات؟',a:'1) الكفاءة في التوسع. 2) تكامل البيانات. 3) أمان البيانات. 4) تحليلات البيانات.'},
+{q:'ما هي أنواع تصنيف قواعد البيانات الثلاثة؟',a:'1) حسب محتوياتها. 2) حسب مجال تطبيقها. 3) حسب جوانبها التقنية.'},
+{q:'ما هي مراحل تطور قواعد البيانات؟',a:'1) قاعدة بيانات هرمية (السبعينيات). 2) قاعدة بيانات الشبكة. 3) قاعدة البيانات العلائقية (الثمانينيات). 4) قاعدة البيانات الموجهة للكائنات (التسعينيات). 5) قاعدة بيانات NoSQL (القرن 21).'},
+{q:'ما هي قواعد البيانات الحديثة؟',a:'1) قاعدة البيانات السحابية. 2) قاعدة البيانات الرسومية. 3) قاعدة البيانات داخل الذاكرة. 4) قواعد بيانات NoSQL. 5) قواعد بيانات المستندات. 6) قواعد البيانات ذاتية التوجيه.'},
+{q:'ما هو مخزن البيانات (Data Warehouse)؟',a:'مصطلح واسع يشير إلى مستودع البيانات الكبير جدًا بأي مؤسسة. تستخدمه المنظمات في معالجة جميع بياناتها وتخزينها والتحليلات واتخاذ القرارات. مثال: Amazon Redshift.'},
+{q:'ما هي لغة SQL؟',a:'هي لغة برمجة تستخدمها تقريبًا كل قواعد البيانات العلائقية للاستعلام عن البيانات ومعالجتها وتعريفها، ولتوفير التحكم في الوصول. طُوّرت في IBM في السبعينيات.'},
+{q:'ما الفرق بين قاعدة البيانات وجدول البيانات؟',a:'الفرق الرئيسي: 1) طريقة تخزين البيانات ومعالجتها. 2) الأشخاص الذين يمكنهم الوصول للبيانات. 3) مقدار البيانات التي يمكن تخزينها. جداول البيانات مصممة لمستخدم واحد، بينما قواعد البيانات للعديد من المستخدمين.'},
+{q:'ما هي قواعد البيانات العلائقية؟',a:'نوع من قواعد البيانات التي تنظّم البيانات في جداول تحتوي على صفوف وأعمدة. تعتمد على العلاقات بين الجداول باستخدام المفاتيح الأساسية والخارجية، وتستخدم SQL لإدارة البيانات.'},
+{q:'ما هي قواعد بيانات NoSQL؟',a:'نوع من قواعد البيانات المصممة للتعامل مع كميات كبيرة من البيانات غير المنظمة أو شبه المنظمة. تتميز بالمرونة والأداء العالي والتوسع الأفقي.'},
+{q:'ما هي قواعد البيانات الموزعة؟',a:'قواعد بيانات يتم توزيع البيانات فيها عبر مواقع جغرافية متعددة أو أنظمة حاسوبية مختلفة، ولكنها تُدار كوحدة واحدة. تتميز بالشفافية وتحسين الأداء والتكرار والتوازي.'},
+{q:'ما هي قواعد البيانات ذاتية التوجيه؟',a:'نوع من قواعد البيانات التي تستخدم تقنيات AI والتعلم الآلي لأتمتة العمليات الإدارية المعقدة مثل التكوين والتحسين والتحديث والمراقبة. تتميز بالتشغيل والتحسين والتوسع الذاتي.'},
+{q:'ما هو نظام إدارة قواعد البيانات (DBMS)؟',a:'برنامج كمبيوتر يُستخدم لإنشاء وإدارة قواعد البيانات. يوفر الأدوات والوظائف اللازمة لتخزين وتنظيم واسترجاع البيانات بشكل فعال وآمن. يُعتبر الوسيط بين المستخدمين وقاعدة البيانات.'},
+{q:'ما هو MySQL؟',a:'نظام مفتوح المصدر لإدارة قواعد البيانات العلائقية ويستند إلى SQL. يُستخدم في أشهر مواقع الويب مثل Airbnb وUber وLinkedIn وFacebook وTwitter وYouTube.'},
+{q:'ما هي قواعد بيانات الرسوم البيانية؟',a:'نوع متخصص من قواعد البيانات مصممة لتمثيل العلاقات المعقدة بين البيانات بشكل هيكلي. تُخزَّن البيانات على شكل عُقد (Nodes) ترتبط ببعضها عبر روابط (Edges).'}]},
+
+{id:2,title:'الوحدة الثانية: الحوسبة السحابية وقواعد البيانات السحابية',shortTitle:'الوحدة 2: الحوسبة السحابية',badge:'الوحدة الثانية — CLO3, CLO4',topics:[
+{title:'1. تعريف الحوسبة السحابية (Cloud Computing)',paragraphs:['الحوسبة السحابية (Cloud Computing) هي نموذج حاسوبي يعتمد على توفير الموارد والخدمات الحاسوبية عبر الإنترنت (السحابة)، بدلاً من الاعتماد على الأجهزة المحلية أو الخوادم الداخلية للشركات. يمكن للمستخدمين الوصول إلى البيانات والتطبيقات والخدمات الحاسوبية باستخدام الإنترنت من أي مكان وفي أي وقت.']},
+{title:'2. مزايا الحوسبة السحابية',paragraphs:['تتميز الحوسبة السحابية بعدة مزايا تجعلها جذابة للشركات والأفراد على حد سواء:'],list:['<strong>1) المرونة (Flexibility):</strong> يمكن للشركات زيادة أو تقليص حجم الموارد التي تستخدمها بناءً على احتياجاتها الحالية.','<strong>2) قابلية التوسع (Scalability):</strong> يمكن توسيع البنية التحتية بسرعة لمواكبة النمو، سواء كان ذلك في عدد المستخدمين أو حجم البيانات.','<strong>3) التكلفة المنخفضة (Cost Efficiency):</strong> لا يحتاج المستخدمون إلى شراء أجهزة أو دفع تكاليف صيانة البنية التحتية.','<strong>4) الأمان (Security):</strong> تعتمد على إجراءات أمان متقدمة، بما في ذلك التشفير، أنظمة الكشف عن الاختراق، والنسخ الاحتياطي المنتظم.']},
+{title:'3. مقارنة بين الحوسبة السحابية والتخزين التقليدي',paragraphs:['في أنظمة التخزين التقليدية، تعتمد الشركات على شراء وإدارة الخوادم المادية التي تخزن البيانات عمليًا. هذا النموذج يتطلب استثمارًا كبيرًا في البنية التحتية، إضافة إلى تكاليف الصيانة والدعم الفني. على العكس من ذلك، في الحوسبة السحابية، يتم تخزين البيانات وإدارتها عبر الإنترنت على خوادم خارجية يديرها مقدمو خدمات السحابة.'],list:['<strong>التكلفة:</strong> في التخزين التقليدي، التكلفة تكون ثابتة بغض النظر عن حجم الاستخدام. أما في السحابة، التكلفة تتغير حسب الاستخدام.','<strong>الإدارة:</strong> التخزين التقليدي يتطلب إدارة داخلية، بينما في السحابة، الإدارة تتم بواسطة مقدمي الخدمة.','<strong>الوصول للبيانات:</strong> في التخزين التقليدي تكون مقيدة بالموقع الجغرافي للخادم، بينما يمكن الوصول إلى البيانات السحابية من أي مكان عبر الإنترنت.']},
+{title:'4. تطور الحوسبة السحابية ودورها في عالم الأعمال الرقمية',paragraphs:['الحوسبة السحابية تطورت بسرعة في العقد الأخير، وبدأت تلعب دورًا حاسمًا في عالم الأعمال الرقمية. في البداية، كانت تُستخدم بشكل أساسي لتخزين البيانات، ولكن مع تطور التكنولوجيا، أصبحت تشمل منصات لتطوير التطبيقات، تحليل البيانات، الذكاء الاصطناعي، وحتى إدارة الأعمال الكاملة.','<strong>دور الحوسبة السحابية في الأعمال الرقمية:</strong>'],list:['<strong>تحسين الكفاءة:</strong> تتيح للشركات الوصول الفوري إلى الموارد التكنولوجية المتقدمة بدون الحاجة إلى استثمارات أولية كبيرة.','<strong>الابتكار:</strong> تسبل تطوير المنتجات والخدمات الجديدة بفضل السرعة والمرونة في التجربة والتنفيذ.','<strong>الاستدامة:</strong> تقليل الاعتماد على البنية التحتية المادية يساعد الشركات على تحقيق استدامة أكبر من خلال تقليل استهلاك الطاقة وخفض البصمة الكربونية.']},
+{title:'5. أنواع الحوسبة السحابية',paragraphs:['الحوسبة السحابية تأتي في عدة أشكال لتلبية احتياجات الشركات والأفراد بشكل مرن ومتنوع. يمكن تقسيم الحوسبة السحابية إلى أربعة أنواع رئيسية:'],list:['<strong>1) الحوسبة السحابية العامة (Public Cloud):</strong> هي النموذج الأكثر شيوعًا واستخدامًا على مستوى العالم. في هذا النموذج، يتم توفير الخدمات والموارد السحابية من قبل مزودي خدمات خارجية، ويتم مشاركتها بين العديد من المستخدمين. أمثلة: AWS, GCP, Microsoft Azure.','<strong>2) الحوسبة السحابية الخاصة (Private Cloud):</strong> تُستخدم من قبل مؤسسة واحدة فقط، وتُدار داخليًا أو بواسطة طرف ثالث. توفر مستوى عالٍ من الأمان والتحكم في البيانات. أمثلة: Bank of America, AT&T, SAP, JPMorgan Chase.','<strong>3) الحوسبة السحابية الهجينة (Hybrid Cloud):</strong> تجمع بين مزايا الحوسبة السحابية العامة والخاصة. يمكن للشركات استخدام بنية تحتية خاصة للعمليات الحساسة والتعامل مع البيانات غير الحساسة في بيئة سحابية عامة. أمثلة: GE, BMW, IBM, Adobe, NASA.','<strong>4) الحوسبة متعددة السحابات (Multi-Cloud):</strong> استخدام عدة مزودي خدمات سحابية في نفس الوقت. الشركات قد تختار هذا النهج لتجنب الاعتماد على مزود واحد فقط وضمان استراتيجية الأعمال. أمثلة: Netflix, Spotify, Airbnb, Uber.']},
+{title:'6. خدمات الحوسبة السحابية',paragraphs:['تنقسم خدمات الحوسبة السحابية إلى ثلاثة أنواع رئيسية:'],list:['<strong>1) البنية التحتية كخدمة (IaaS - Infrastructure as a Service):</strong> هي خدمة تقدم الموارد الحاسوبية الأساسية، مثل الخوادم، والشبكات، والتخزين، التي يمكن للشركات استخدامها لتشغيل التطبيقات وتخزين البيانات. أمثلة: Amazon Web Services, Microsoft Azure, Google Cloud.','<strong>2) المنصة كخدمة (PaaS - Platform as a Service):</strong> هي بيئة تطوير متكاملة يتم تقديمها عبر السحابة، وتتيح للمطورين بناء التطبيقات وتشغيلها دون الحاجة إلى إدارة الخوادم أو البنية التحتية. أمثلة: Google App Engine, Microsoft Azure App Services, Heroku.','<strong>3) البرمجيات كخدمة (SaaS - Software as a Service):</strong> هي نموذج تقديم البرامج عبر الإنترنت، بدلاً من تثبيت البرامج على أجهزة المستخدمين. أمثلة: Google Workspace, Salesforce, Microsoft Office 365.']},
+{title:'7. مقارنة بين IaaS وPaaS وSaaS',paragraphs:['<strong>مقارنة بين IaaS, PaaS, وSaaS:</strong>'],list:['<strong>المستوى:</strong> IaaS = أدنى مستوى (البنية التحتية)، PaaS = مستوى وسط (المنصة)، SaaS = أعلى مستوى (البرمجيات).','<strong>المستخدمون:</strong> IaaS = فرق تكنولوجيا المعلومات، PaaS = المطورون، SaaS = المستخدمون النهائيون.','<strong>المميزات:</strong> IaaS = تحكم كامل في الموارد، PaaS = بيئة تطوير جاهزة، SaaS = استخدام البرامج بسهولة.']},
+{title:'8. معايير اختيار نوع الحوسبة السحابية',paragraphs:['اختيار نوع الحوسبة السحابية المناسب يعتمد على مجموعة من المعايير التي تساعد الشركات على اتخاذ القرار الصائب وفقًا لاحتياجاتها وأهدافها التقنية:'],list:['<strong>1) الأمان:</strong> بعض المؤسسات مثل البنوك أو الشركات العاملة في المجال الصحي قد تحتاج إلى مستوى عالٍ جدًا من الأمان لحماية بيانات العملاء والبيانات الحساسة.','<strong>2) التكلفة:</strong> الحوسبة السحابية العامة عادةً ما تكون أقل تكلفة، بينما الخاصة أعلى تكلفة لأنها تتطلب شراء وصيانة الأجهزة والبنية التحتية.','<strong>3) المرونة وقابلية التوسع:</strong> الشركات التي تحتاج إلى التوسع السريع ستحتاج إلى حلول حماية مرنة.','<strong>4) الامتثال للقوانين والتنظيمات:</strong> بعض الصناعات تخضع لقوانين صارمة تتعلق بحماية البيانات والامتثال التنظيمي مثل GDPR وHIPAA.','<strong>5) الأداء:</strong> أداء أنظمة السحابة مهم جدًا للشركات التي تعتمد على التطبيقات التي تتطلب استجابة سريعة وموثوقية عالية.']},
+{title:'9. استراتيجيات الاستفادة من الحوسبة السحابية في الشركات',paragraphs:['استراتيجيات الاستفادة من الحوسبة السحابية تختلف بناءً على احتياجات كل شركة وأهدافها. ومن أهم هذه الاستراتيجيات:'],list:['<strong>1) التحول الرقمي:</strong> نقل التطبيقات التقليدية إلى السحابة لتوفير التكاليف وزيادة المرونة. يمكن نقل التطبيقات الكبيرة مثل نظم تخطيط الموارد (ERP) أو نظم إدارة علاقات العملاء (CRM) إلى السحابة لتحسين الكفاءة.','<strong>2) استخدام البيانات والتحليلات:</strong> استخدام الحوسبة السحابية لتحليل كميات هائلة من البيانات في الوقت الفعلي، باستخدام منصات مثل Google BigQuery أو AWS Redshift.','<strong>3) تطوير التطبيقات السحابية:</strong> استخدام منصات مثل AWS وMicrosoft Azure لتطوير التطبيقات مباشرة في السحابة، مما يسهل عملية الاختبار والنشر.','<strong>4) تحسين تجربة العملاء:</strong> استخدام البرمجيات كخدمة (SaaS) لتقديم حلول تفاعلية للعملاء مثل الدردشة الفورية، إدارة الطلبات عبر الإنترنت.','<strong>5) إدارة الموارد المالية:</strong> الاستفادة من نماذج الدفع بناءً على الاستهلاك مثل SaaS وIaaS.','<strong>6) التعافي من الكوارث واستمرارية الأعمال:</strong> استخدام الحوسبة السحابية لتخزين النسخ الاحتياطية للبيانات والمواد في مواقع متعددة.']},
+{title:'10. تحديات الحوسبة السحابية',paragraphs:['رغم الفوائد العديدة التي تقدمها الحوسبة السحابية للشركات، فإنها لا تخلو من التحديات التي يجب معالجتها:'],list:['<strong>1) الأمان والخصوصية:</strong> الأمان يمثل التحدي الأكبر في الحوسبة السحابية، حيث تعتمد الشركات على طرف ثالث لتخزين ومعالجة بياناتها.','<strong>2) الامتثال للقوانين والتنظيمات:</strong> تواجه الشركات تحديات كبيرة في الامتثال للقوانين التي تنظم خصوصية البيانات وحمايتها.','<strong>3) الاعتماد على مزودي الخدمات:</strong> الاعتماد الكبير على مزودي الخدمات السحابية يشكل تحديًا للشركات، خاصة عندما يتعلق الأمر بجودة الخدمة.','<strong>4) التكاليف غير المتوقعة:</strong> رغم أن الحوسبة السحابية يمكن أن تكون فعالة من حيث التكلفة، إلا أن بعض الشركات قد تفاجأ بارتفاع الفواتير نتيجة لسوء إدارة الموارد السحابية.','<strong>5) قضايا الاتصال والموثوقية:</strong> بما أن الحوسبة السحابية تعتمد على الاتصال بالإنترنت، فإن مشكلات الاتصال أو انخفاض الموثوقية قد تؤدي إلى تأثيرات سلبية.','<strong>6) إدارة العمليات والتعقيد التقني:</strong> الانتقال إلى الحوسبة السحابية وإدارتها قد يكون معقدًا، خاصة في البيئات التي تعتمد على السحابة متعددة السحابات أو الهجينة.','<strong>7) قضايا الأداء:</strong> يمكن أن تتأثر بعض التطبيقات بالأداء في البيئة السحابية، سواء بسبب تأخير الاتصال أو مشكلات في تحليل الموارد.']}],
+questions:[
+{q:'ما هي الحوسبة السحابية العامة؟',options:['الحوسبة التي تعتمد على بنية تحتية خاصة بالشركة','الحوسبة التي توفر خدمات مشتركة عبر الإنترنت','الحوسبة التي تجمع بين الحوسبة العامة والخاصة','الحوسبة التي لا تحتاج إنترنت'],correct:1},
+{q:'أي من التالي يعد من مزودي خدمات الحوسبة السحابية العامة؟',options:['Amazon Web Services (AWS)','Microsoft Excel','Google Chrome','Adobe Photoshop'],correct:0},
+{q:'أي من مزايا قواعد البيانات السحابية؟',options:['تتطلب صيانة مستمرة للأجهزة','توفر التوسع التلقائي وسهولة الوصول','تقيد الوصول إلى البيانات في أي وقت','تحتاج دائماً خوادم محلية'],correct:1},
+{q:'أي من مزايا الحوسبة السحابية؟',options:['تكاليف أقل، مرونة في التوسع، وسهولة الوصول','تكاليف عالية، وصيانة مكلفة','عدم القدرة على تخصيص الموارد','تحتاج دائماً شراء أجهزة'],correct:0},
+{q:'ما الفرق بين IaaS وPaaS وSaaS؟',options:['لا يوجد فرق','IaaS = البنية التحتية، PaaS = المنصة، SaaS = البرمجيات','كلها نفس الشيء','SaaS هو الأدنى مستوى'],correct:1}],
+flashCards:[
+{q:'ما هي الحوسبة السحابية (Cloud Computing)؟',a:'نموذج حاسوبي يعتمد على توفير الموارد والخدمات الحاسوبية عبر الإنترنت (السحابة)، بدلاً من الاعتماد على الأجهزة المحلية أو الخوادم الداخلية للشركات.'},
+{q:'ما هي مزايا الحوسبة السحابية الأربعة؟',a:'1) المرونة (Flexibility). 2) قابلية التوسع (Scalability). 3) التكلفة المنخفضة (Cost Efficiency). 4) الأمان (Security).'},
+{q:'ما الفرق بين التخزين التقليدي والحوسبة السحابية؟',a:'التكلفة: ثابتة مقابل متغيرة حسب الاستخدام. الإدارة: داخلية مقابل بواسطة مقدمي الخدمة. الوصول: مقيد جغرافياً مقابل من أي مكان عبر الإنترنت.'},
+{q:'ما هي أنواع الحوسبة السحابية الأربعة؟',a:'1) العامة (Public Cloud). 2) الخاصة (Private Cloud). 3) الهجينة (Hybrid Cloud). 4) متعددة السحابات (Multi-Cloud).'},
+{q:'ما هي أمثلة الحوسبة السحابية العامة؟',a:'AWS (Amazon Web Services), GCP (Google Cloud Platform), Microsoft Azure.'},
+{q:'ما هي أمثلة الحوسبة السحابية الخاصة؟',a:'Bank of America, AT&T, SAP, JPMorgan Chase, Northrop Grumman, Apple.'},
+{q:'ما هي أمثلة الحوسبة السحابية الهجينة؟',a:'GE, BMW, IBM, Adobe, NASA.'},
+{q:'ما هي أمثلة الحوسبة متعددة السحابات؟',a:'Netflix, Spotify, Airbnb, Uber.'},
+{q:'ما هي خدمات الحوسبة السحابية الثلاثة؟',a:'1) البنية التحتية كخدمة (IaaS). 2) المنصة كخدمة (PaaS). 3) البرمجيات كخدمة (SaaS).'},
+{q:'ما هي أمثلة IaaS؟',a:'Amazon Web Services (AWS), Microsoft Azure, Google Cloud.'},
+{q:'ما هي أمثلة PaaS؟',a:'Google App Engine, Microsoft Azure App Services, Heroku.'},
+{q:'ما هي أمثلة SaaS؟',a:'Google Workspace (Gmail, Google Docs, Google Drive), Salesforce, Microsoft Office 365.'},
+{q:'ما هي معايير اختيار نوع الحوسبة السحابية؟',a:'1) الأمان. 2) التكلفة. 3) المرونة وقابلية التوسع. 4) الامتثال للقوانين والتنظيمات. 5) الأداء.'},
+{q:'ما هي استراتيجيات الاستفادة من الحوسبة السحابية؟',a:'1) التحول الرقمي. 2) استخدام البيانات والتحليلات. 3) تطوير التطبيقات السحابية. 4) تحسين تجربة العملاء. 5) إدارة الموارد المالية. 6) التعافي من الكوارث واستمرارية الأعمال.'},
+{q:'ما هي تحديات الحوسبة السحابية؟',a:'1) الأمان والخصوصية. 2) الامتثال للقوانين. 3) الاعتماد على مزودي الخدمات. 4) التكاليف غير المتوقعة. 5) قضايا الاتصال والموثوقية. 6) إدارة العمليات والتعقيد التقني. 7) قضايا الأداء.'}]},
+
+{id:3,title:'الوحدة الثالثة: قواعد البيانات غير العلائقية (NoSQL)',shortTitle:'الوحدة 3: قواعد بيانات NoSQL',badge:'الوحدة الثالثة — CLO5, CLO6',topics:[
+{title:'1. تعريف NoSQL',paragraphs:['NoSQL هي اختصار لـ "Not Only SQL" أو "Non-relational SQL"، وهو نوع من قواعد البيانات التي لا تعتمد على النموذج العلائقي التقليدي الذي يستخدم الجداول والعلاقات بين البيانات. تم تطوير قواعد بيانات NoSQL لتلبية الاحتياجات المتزايدة لتخزين ومعالجة البيانات الضخمة والمتنوعة والتي تكون غير مهيكلة أو شبه مهيكلة.','يتم استخدام NoSQL بشكل رئيسي في التطبيقات التي تتطلب مرونة عالية وسرعة في الوصول إلى البيانات، مثل التطبيقات السحابية، وتطبيقات الإنترنت الحديثة، وتطبيقات البيانات الضخمة.']},
+{title:'2. الاختلافات الرئيسية بين SQL وNoSQL',paragraphs:['<strong>1) الهيكلية:</strong>'],list:['<strong>SQL (قواعد البيانات العلائقية):</strong> تستخدم SQL هيكلًا علائقيًا يعتمد على الجداول التي تحتوي على صفوف وأعمدة، والعلاقات بين البيانات تكون محددة مسبقًا ويتم الحفاظ عليها من خلال المفاتيح (الأساسية والأجنبية).','<strong>NoSQL (قواعد البيانات غير العلائقية):</strong> لا تستخدم NoSQL الجداول أو العلاقات الثابتة، بدلاً من ذلك، تعتمد على نماذج بيانات مختلفة مثل الوثائق، الأعمدة، المفاتيح والقيم، أو الرسوم البيانية.'],paragraphs2:['<strong>2) المرونة:</strong>','- SQL: يتطلب تصميم قاعدة البيانات في SQL تخطيطًا دقيقًا وتحديدًا مسبقًا للهيكلية والقيود. تعديل الهيكلية لاحقًا قد يكون معقدًا.','- NoSQL: توفر NoSQL مرونة عالية، حيث يمكن تعديل وإضافة أنواع جديدة من البيانات دون الحاجة إلى إعادة تصميم الهيكلية بالكامل.','<strong>3) قابلية التوسع:</strong>','- SQL: عادةً ما تكون قواعد البيانات العلائقية محدودة في قابلية التوسع الأفقي (إضافة مزيد من الخوادم لتوزيع الحمل)، مما يجعل التوسع العمودي (زيادة قدرة الخادم الحالي) هو الخيار الأكثر شيوعًا.','- NoSQL: تم تصميم NoSQL للتوسع الأفقي بسهولة، مما يسمح بتوزيع البيانات عبر عدة خوادم دون التأثير على الأداء.','<strong>4) اللغة:</strong>','- SQL: تستخدم لغة استعلام موحدة (SQL) لإدارة واسترجاع البيانات. هذه اللغة قوية ولكنها تتطلب معرفة جيدة بطرق بناء الجمل واستعلامات SQL.','- NoSQL: تختلف لغات الاستعلام وإدارة البيانات بين أنواع NoSQL، وبعضها يعتمد على استدعاءات API أو لغات خاصة بكل نظام.','<strong>5) الاتساق والمعاملات:</strong>','- SQL: توفر دعمًا قويًا للمعاملات والاتساق عبر نموذج ACID (Atomicity, Consistency, Isolation, Durability).','- NoSQL: غالبًا ما تعتمد NoSQL على نموذج CAP (Consistency, Availability, Partition tolerance) الذي يركز على التوافر العالي والقدرة على التوسع.','<strong>6) الأداء:</strong>','- SQL: يكون الأداء في SQL ممتازًا عندما يكون حجم البيانات معتدلًا وتكون العلاقات بين البيانات معقدة.','- NoSQL: عادةً ما تقدم NoSQL أداءً أفضل مع البيانات الضخمة والعمليات التي تتطلب الوصول السريع إلى البيانات غير المهيكلة أو شبه المهيكلة.']},
+{title:'3. أنواع قواعد بيانات NoSQL',paragraphs:['<strong>1) قواعد البيانات المستندة إلى الوثائق (Document-Based):</strong> تخزن البيانات في شكل وثائق (Documents) بدلاً من الجداول. هذه الوثائق تكون عادةً في تنسيق JSON أو BSON أو XML، حيث تحتوي على أزواج من المفاتيح والقيم.','<strong>الميزات:</strong>'],list:['<strong>مرونة الهيكل:</strong> كل وثيقة يمكن أن تحتوي على مجموعة مختلفة من الحقول.','<strong>قابلية التوسع:</strong> يمكن توزيع الوثائق عبر عدة خوادم بشكل أفقي.','<strong>سهولة الاستخدام:</strong> نظرًا لأن الوثائق تشبه الهياكل المستخدمة في لغات البرمجة الحديثة مثل JavaScript.','<strong>أمثلة:</strong> MongoDB, CouchDB, Amazon DocumentDB.']},
+{title:'4. قواعد البيانات القائمة على الأعمدة (Columnar)',paragraphs:['قواعد البيانات القائمة على الأعمدة تخزن البيانات في أعمدة بدلاً من الصفوف. في هذا النوع، كل عمود يتم تخزينه بشكل منفصل، مما يسمح باسترجاع البيانات بشكل أسرع خاصة في العمليات التي تحتاج إلى قراءة كمية كبيرة من البيانات من أعمدة محددة.'],list:['<strong>أداء عالي في الاستعلامات التحليلية:</strong> تصميم الأعمدة يجعلها مثالية للعمليات التحليلية التي تتطلب قراءة بيانات كبيرة من أعمدة محددة.','<strong>ضغط البيانات:</strong> يمكن ضغط البيانات بشكل فعال على مستوى الأعمدة.','<strong>سهولة التوسع:</strong> يمكن توزيع الأعمدة عبر خوادم متعددة.','<strong>أمثلة:</strong> Apache Cassandra, HBase.']},
+{title:'5. قواعد البيانات الموجهة نحو الرسم البياني (Graph-Based)',paragraphs:['قواعد البيانات الموجهة نحو الرسم البياني مصممة لتخزين البيانات التي تركز على العلاقات بين العناصر. يتم تمثيل البيانات على شكل عقد (Nodes) وعلاقات (Edges)، حيث تمثل العقد الكيانات الفردية وتمثل العلاقات الروابط بينها. هذا النموذج مثالي للبيانات التي تحتاج إلى تحليل العلاقات المعقدة.'],list:['<strong>إدارة العلاقات المعقدة:</strong> يمكن لقواعد البيانات الموجهة نحو الرسم البياني التعامل مع العلاقات المتعددة والمعقدة بكفاءة عالية.','<strong>أداء عالي في استعلامات العلاقات:</strong> استعلامات مثل مسارات القصر أو البحث عن الجيران تكون سريعة وفعالة.','<strong>مرونة:</strong> يمكن إضافة عقد وعلاقات جديدة بسهولة دون الحاجة إلى إعادة تصميم النموذج.','<strong>أمثلة:</strong> Neo4j, OrientDB.']},
+{title:'6. قواعد البيانات القائمة على المفاتيح والقيم (Key-Value)',paragraphs:['قواعد البيانات القائمة على المفاتيح والقيم هي أبسط أنواع قواعد بيانات NoSQL. يتم تخزين البيانات في أزواج من المفتاح والقيمة، حيث يكون المفتاح فريدًا ويُستخدم للوصول إلى القيمة المقابلة. القيم يمكن أن تكون أي نوع من البيانات مثل نصوص، أرقام، أو حتى كائنات كاملة.'],list:['<strong>سرعة الوصول:</strong> بفضل البنية البسيطة، تعتبر هذه القواعد سريعة للغاية في الوصول إلى البيانات.','<strong>سهولة التوزيع:</strong> يمكن توزيع البيانات بسهولة عبر خوادم متعددة.','<strong>مرونة:</strong> لا توجد قيود على بنية البيانات داخل القيمة.','<strong>أمثلة:</strong> Redis, Amazon DynamoDB.']},
+{title:'7. حالات استخدام NoSQL',paragraphs:['<strong>1) متى يتم اختيار NoSQL على SQL:</strong>'],list:['<strong>أ. التعامل مع البيانات غير المنظمة أو شبه المنظمة:</strong> إذا كان لديك بيانات غير منظمة أو شبه منظمة مثل الوثائق النصية، JSON، السجلات، أو البيانات التي لا تناسب النموذج الجدولي التقليدي، فإن NoSQL يكون خيارًا أفضل.','<strong>ب. الحاجة إلى قابلية التوسع الأفقي:</strong> إذا كان نظامك يحتاج إلى التوسع الأفقي لتوزيع البيانات عبر عدة خوادم بسهولة وبدون تعقيد، فإن NoSQL هو الخيار الأمثل.','<strong>ج. الأداء العالي في القراءة/الكتابة:</strong> إذا كان تطبيقك يتطلب أداءً عاليًا من حيث عدد كبير من عمليات القراءة أو الكتابة في زمن قصير، فإن NoSQL يمكن أن يوفر ذلك.','<strong>د. المرونة في التصميم والتطوير السريع:</strong> إذا كان المشروع يحتاج إلى مرونة في تغيير بنية البيانات أو إذا كان التصميم غير محدد بوضوح من البداية.','<strong>هـ. تحليل العلاقات المعقدة بين البيانات:</strong> إذا كنت تتعامل مع بيانات تحتوي على علاقات معقدة ومتعددة الطبقات بين الكائنات، مثل شبكات التواصل الاجتماعي، فإن قواعد البيانات الموجهة نحو الرسم البياني هي الخيار الأمثل.','<strong>و. التعامل مع كميات هائلة من البيانات المتغيرة باستمرار:</strong> إذا كانت البيانات التي تتعامل معها تتغير باستمرار وبسرعة كبيرة، أو إذا كانت تأتي من مصادر متعددة وبأشكال مختلفة.']},
+{title:'8. التطبيقات الشائعة مثل التجارة الإلكترونية والشبكات الاجتماعية',paragraphs:['<strong>أ. التجارة الإلكترونية:</strong> تُستخدم بشكل واسع في تطبيقات التجارة الإلكترونية لعدة أسباب:'],list:['<strong>إدارة الكتالوجات المرنة:</strong> في مواقع التجارة الإلكترونية، يمكن أن تكون المنتجات مختلفة بشكل كبير من حيث الخصائص.','<strong>التعامل مع الزيادات الموسمية في الطلب:</strong> مواقع التجارة الإلكترونية تواجه زيادات كبيرة في حركة المرور خلال مواسم البيع الكبرى.','<strong>إدارة بيانات المستخدمين والتوصيات:</strong> تُستخدم لتخزين بيانات سلوك المستخدمين وسجلات الشراء.','<strong>أداء عالي في الاستعلامات:</strong> تتطلب أداءً عاليًا في معالجة الطلبات والاستعلامات البحث.']},
+{title:'9. إدارة قواعد بيانات NoSQL في بيئة سحابية',paragraphs:['<strong>1) أدوات ومنصات NoSQL في البيئة السحابية:</strong>'],list:['<strong>MongoDB Atlas:</strong> هي خدمة قاعدة بيانات مُدارة بالكامل تعتمد على MongoDB، وتعمل على سحابات متعددة مثل AWS وGoogle Cloud وAzure.','<strong>التشغيل الآلي:</strong> يوفر Atlas قدرات التشغيل الآلي مثل النسخ الاحتياطي التلقائي، المراقبة، وإدارة التحديثات.','<strong>قابلية التوسع التلقائي:</strong> يتيح Atlas التوسع التلقائي للموارد بناءً على حجم العمل.','<strong>التوافق مع الأمان:</strong> يتوافق Atlas مع معايير الأمان العالمية مثل SOC 2، GDPR، HIPAA.','<strong>التكامل مع الأدوات الأخرى:</strong> يتكامل MongoDB Atlas مع أدوات DevOps، أدوات التحليل، ومنصات السحابة الأخرى.']},
+{title:'10. التحديات في إدارة NoSQL في السحابة',paragraphs:['<strong>أ. قابلية التوسع والأداء:</strong> على الرغم من أن السحابة توفر إمكانيات هائلة للتوسع، إلا أن إدارة الأداء وتكلفة التوسع يمكن أن تكون تحديات حقيقية.','<strong>ب. إدارة البيانات الموزعة:</strong> في بيئة NoSQL السحابية، يتم توزيع البيانات عبر خوادم متعددة. إدارة الاتساق وتزامن البيانات بين هذه الخوادم يمكن أن يكون معقدًا.','<strong>ج. الأمان والامتثال:</strong> حماية البيانات في بيئة NoSQL السحابية تتطلب تدابير أمنية قوية مثل تشفير البيانات، إدارة الوصول، والمراقبة المستمرة.','<strong>د. تكامل الأنظمة:</strong> في بعض الحالات، يكون من الضروري دمج قاعدة بيانات NoSQL السحابية مع أنظمة قديمة أو قواعد بيانات SQL.','<strong>هـ. إدارة النسخ الاحتياطية والتعافي من الكوارث:</strong> على الرغم من أن منصات NoSQL السحابية غالبًا ما توفر نسخًا احتياطية تلقائية، فإن إدارة استراتيجيات النسخ الاحتياطي وضمان القدرة على التعافي السريع من الكوارث تعد تحديات مستمرة.','<strong>و. إدارة التكاليف:</strong> البيئة السحابية تقدم خدمات متعددة بمقابل مالي، مما يجعل إدارة التكاليف تحديًا للشركات التي تتعامل مع بيانات ضخمة.']}],
+questions:[
+{q:'ما هي الميزة الرئيسية لقواعد بيانات NoSQL؟',options:['المرونة في تخزين البيانات غير المنظمة','عدم القدرة على التوسع','الحاجة إلى تخزين البيانات في جداول','لا يمكن استخدامها في التطبيقات الحديثة'],correct:0},
+{q:'أي نوع من البيانات يناسب قواعد بيانات NoSQL؟',options:['بيانات مهيكلة فقط','بيانات غير مهيكلة وشبه مهيكلة','بيانات رقمية فقط','بيانات نصية فقط'],correct:1},
+{q:'ما هي قواعد البيانات المستندة إلى الوثائق؟',options:['تخزن البيانات في جداول','تخزن البيانات في وثائق JSON/BSON','تخزن البيانات في أعمدة','تخزن البيانات في عقد وحواف'],correct:1},
+{q:'ما هي أمثلة قواعد البيانات الموجهة نحو الرسم البياني؟',options:['MongoDB و CouchDB','Redis و DynamoDB','Neo4j و OrientDB','Cassandra و HBase'],correct:2},
+{q:'ما هي منصة NoSQL السحابية التي تعمل على AWS و Google Cloud و Azure؟',options:['MongoDB Atlas','Redis Cloud','Cassandra Cloud','Neo4j Aura'],correct:0}],
+flashCards:[
+{q:'ما هو NoSQL؟',a:'اختصار لـ "Not Only SQL" أو "Non-relational SQL"، وهو نوع من قواعد البيانات التي لا تعتمد على النموذج العلائقي التقليدي الذي يستخدم الجداول والعلاقات.'},
+{q:'ما هي الاختلافات الرئيسية بين SQL وNoSQL؟',a:'1) الهيكلية: جداول مقابل نماذج بيانات مختلفة. 2) المرونة: تصميم مسبق مقابل مرونة عالية. 3) قابلية التوسع: عمودي مقابل أفقي. 4) اللغة: SQL مقابل APIs. 5) الاتساق: ACID مقابل CAP. 6) الأداء: بيانات معتدلة مقابل بيانات ضخمة.'},
+{q:'ما هي أنواع قواعد بيانات NoSQL؟',a:'1) المستندة إلى الوثائق (Document-Based). 2) القائمة على الأعمدة (Columnar). 3) الموجهة نحو الرسم البياني (Graph-Based). 4) القائمة على المفاتيح والقيم (Key-Value).'},
+{q:'ما هي قواعد البيانات المستندة إلى الوثائق؟',a:'تخزن البيانات في شكل وثائق (Documents) بدلاً من الجداول. الوثائق في تنسيق JSON أو BSON أو XML. أمثلة: MongoDB, CouchDB, Amazon DocumentDB.'},
+{q:'ما هي قواعد البيانات القائمة على الأعمدة؟',a:'تخزن البيانات في أعمدة بدلاً من الصفوف. مثالية للعمليات التحليلية. أمثلة: Apache Cassandra, HBase.'},
+{q:'ما هي قواعد البيانات الموجهة نحو الرسم البياني؟',a:'مصممة لتخزين البيانات التي تركز على العلاقات. تمثل البيانات على شكل عقد (Nodes) وعلاقات (Edges). أمثلة: Neo4j, OrientDB.'},
+{q:'ما هي قواعد البيانات القائمة على المفاتيح والقيم؟',a:'أبسط أنواع NoSQL. تخزن البيانات في أزواج من المفتاح والقيمة. أمثلة: Redis, Amazon DynamoDB.'},
+{q:'متى يتم اختيار NoSQL على SQL؟',a:'1) التعامل مع البيانات غير المنظمة. 2) الحاجة إلى قابلية التوسع الأفقي. 3) الأداء العالي في القراءة/الكتابة. 4) المرونة في التصميم. 5) تحليل العلاقات المعقدة. 6) التعامل مع كميات هائلة من البيانات المتغيرة.'},
+{q:'ما هي استخدامات NoSQL في التجارة الإلكترونية؟',a:'1) إدارة الكتالوجات المرنة. 2) التعامل مع الزيادات الموسمية. 3) إدارة بيانات المستخدمين والتوصيات. 4) أداء عالي في الاستعلامات.'},
+{q:'ما هو MongoDB Atlas؟',a:'خدمة قاعدة بيانات مُدارة بالكامل تعتمد على MongoDB، وتعمل على سحابات متعددة مثل AWS وGoogle Cloud وAzure. توفر التشغيل الآلي، قابلية التوسع التلقائي، والتوافق مع معايير الأمان.'},
+{q:'ما هي مميزات MongoDB Atlas؟',a:'1) التشغيل الآلي. 2) قابلية التوسع التلقائي. 3) التوافق مع الأمان (SOC 2، GDPR، HIPAA). 4) التكامل مع الأدوات الأخرى.'},
+{q:'ما هي تحديات إدارة NoSQL في السحابة؟',a:'1) قابلية التوسع والأداء. 2) إدارة البيانات الموزعة. 3) الأمان والامتثال. 4) تكامل الأنظمة. 5) إدارة النسخ الاحتياطية والتعافي. 6) إدارة التكاليف.'}]},
+
+{id:4,title:'الوحدة الرابعة: تطبيقات قواعد البيانات في الحياة العملية',shortTitle:'الوحدة 4: تطبيقات قواعد البيانات',badge:'الوحدة الرابعة — CLO7, CLO8',topics:[
+{title:'1. أهمية قواعد البيانات في مختلف القطاعات',paragraphs:['تُعتبر قواعد البيانات العمود الفقري للعديد من التطبيقات في مختلف القطاعات. من خلال تخزين البيانات وتنظيمها وإدارتها، تساعد قواعد البيانات المؤسسات على تحسين الكفاءة واتخاذ قرارات مبنية على البيانات.']},
+{title:'2. قواعد البيانات في التعليم',paragraphs:['قواعد البيانات تلعب دورًا محوريًا في قطاع التعليم من خلال تخزين وتنظيم وإدارة المعلومات بشكل يمكن المؤسسات التعليمية من تحسين العمليات الإدارية والتعليمية.'],list:['<strong>1) إدارة معلومات الطلاب:</strong> إدارة معلومات الطلاب تتضمن تخزين وتنظيم البيانات الأكاديمية والشخصية للطلاب، مثل الدرجات، الحضور، التاريخ الأكاديمي، والبيانات الشخصية.','<strong>2) نظم التعلم الإلكتروني (LMS):</strong> تساعد قواعد البيانات في إدارة الدورات التعليمية، وتتبع تقدم الطلاب، وتقديم المحتوى التعليمي عبر الإنترنت.']},
+{title:'3. قواعد البيانات في الصحة',paragraphs:['قواعد البيانات تلعب دورًا حاسمًا في قطاع الصحة، حيث تساعد في إدارة المعلومات الصحية وتحليلها، مما يساهم في تحسين جودة الرعاية الصحية وتوفير الوقت والتكاليف.'],list:['<strong>1) إدارة السجلات الطبية الإلكترونية (EMR):</strong> تشير إلى نظام رقمي لتخزين وإدارة معلومات المرضى بشكل إلكتروني بدلاً من السجلات الورقية التقليدية.','<strong>2) تحليل البيانات الصحية:</strong> يعتمد على استخدام قواعد البيانات لجمع وتحليل كميات كبيرة من البيانات الصحية لتقديم رؤى قيمة تساعد في تحسين الرعاية الصحية واتخاذ قرارات علاجية مستنيرة.','<strong>3) نظم دعم القرار السريري (CDSS):</strong> هي أدوات تستخدمها الفرق الطبية لتقديم توصيات قائمة على البيانات تساعد في اتخاذ القرارات السريرية الدقيقة.']},
+{title:'4. قواعد البيانات في الأعمال',paragraphs:['قواعد البيانات هي أساس العمليات التجارية الحديثة. إنها تمكن الشركات من تخزين وتنظيم وتحليل المعلومات بكفاءة، مما يساعدها على اتخاذ قرارات مستنيرة وتعزيز الكفاءة التشغيلية.'],list:['<strong>1) إدارة علاقات العملاء (CRM):</strong> هي استراتيجية تستخدمها الشركات لإدارة تفاعلاتها مع العملاء الحاليين والمحتملين، تعتمد أنظمة CRM على قواعد البيانات لتخزين معلومات شاملة حول العملاء.','<strong>2) نظم تخطيط موارد المؤسسات (ERP):</strong> هي حلول برمجية متكاملة تساعد الشركات على إدارة وتنسيق العمليات الداخلية عبر مختلف الوظائف، مثل المالية، الموارد البشرية، المشتريات، والإنتاج.','<strong>3) التجارة الإلكترونية:</strong> تعتمد بشكل كبير على قواعد البيانات لإدارة العديد من الجوانب المهمة مثل المنتجات، المخزون، والطلبات.']},
+{title:'5. قواعد البيانات في الحكومة',paragraphs:['قواعد البيانات تُعتبر أداة أساسية في القطاع الحكومي لإدارة المعلومات بكفاءة وتحسين العمليات الإدارية والخدمات المقدمة للمواطنين. يمكن استخدام قواعد البيانات في مجالات متعددة مثل إدارة الهوية الوطنية، إدارة الموارد العامة، وتعزيز الأمن الداخلي.'],list:['<strong>1) إدارة الهوية الوطنية:</strong> تعتمد على قواعد البيانات لتخزين وإدارة معلومات الهوية الشخصية للمواطنين والمقيمين، مثل الأسماء، تواريخ الميلاد، العناوين، وأرقام الهوية.','<strong>2) إدارة الموارد العامة:</strong> تُعتبر من المهام الرئيسية للحكومات، وقواعد البيانات تلعب دورًا حاسمًا في تحسين هذه الإدارة من خلال تتبع الاستهلاك، التنبؤ بالاحتياجات، وتحسين توزيع الموارد.','<strong>3) الأمن الداخلي:</strong> يعتمد بشكل كبير على قواعد البيانات في تتبع الجرائم والمشتبه بهم، مما يساعد الأجهزة الأمنية في الحفاظ على الأمن العام.']},
+{title:'6. الاتجاهات الحديثة في تطبيقات قواعد البيانات',paragraphs:['قواعد البيانات تشهد تطورًا كبيرًا مع ظهور تقنيات جديدة وتحولات في كيفية التعامل مع البيانات، مما أدى إلى نشوء اتجاهات حديثة تستفيد من الحوسبة السحابية، قواعد البيانات الكبيرة (Big Data)، والذكاء الاصطناعي.'],list:['<strong>1) الحوسبة السحابية وقواعد البيانات:</strong> الحوسبة السحابية تُعد من أكبر التحولات في إدارة قواعد البيانات، حيث تتيح للمؤسسات تخزين البيانات وإدارتها عبر الإنترنت بدلاً من استخدام الخوادم المحلية التقليدية.','<strong>2) قواعد البيانات الكبيرة (Big Data):</strong> تمثل كمية هائلة من البيانات التي تُجمع من مصادر متعددة وتتميز بالتنوع والسرعة والحجم الضخم.','<strong>3) الذكاء الاصطناعي وتحليل البيانات:</strong> أصبح جزءًا أساسيًا من تحليل البيانات، حيث تُستخدم قواعد البيانات لدعم نماذج الذكاء الاصطناعي وتقديم رؤى دقيقة بناءً على البيانات.']}],
+questions:[
+{q:'ما هو دور قواعد البيانات في التجارة الإلكترونية؟',options:['إدارة المخزون','تسجيل الطلبات','كليهما','لا شيء مما ذُكر'],correct:2},
+{q:'ما هو القطاع الذي يعتمد بشكل أساسي على قواعد البيانات لتحليل البيانات؟',options:['القطاع الصحي','القطاع التجاري','القطاع التعليمي','جميع ما سبق'],correct:3},
+{q:'كيف تستخدم المؤسسات الحكومية قواعد البيانات؟',options:['في تنظيم البيانات وتحليلها','في عرض البيانات فقط','في إدارة الموظفين فقط','لا تستخدمها'],correct:0},
+{q:'ما هي السجلات الطبية الإلكترونية (EMR)؟',options:['نظام ورقي','نظام رقمي لتخزين وإدارة معلومات المرضى','نظام محاسبي','نظام تعليمي'],correct:1},
+{q:'ما هي فوائد استخدام قواعد البيانات في قطاع التعليم؟',options:['إدارة معلومات الطلاب','نظم التعلم الإلكتروني','تحليل الأداء الأكاديمي','جميع ما سبق'],correct:3}],
+flashCards:[
+{q:'كيف تساهم قواعد البيانات في التعليم؟',a:'1) إدارة معلومات الطلاب (الدرجات، الحضور، التاريخ الأكاديمي). 2) نظم التعلم الإلكتروني (LMS) لإدارة الدورات وتتبع التقدم.'},
+{q:'كيف تساهم قواعد البيانات في الصحة؟',a:'1) إدارة السجلات الطبية الإلكترونية (EMR). 2) تحليل البيانات الصحية. 3) نظم دعم القرار السريري (CDSS).'},
+{q:'كيف تساهم قواعد البيانات في الأعمال؟',a:'1) إدارة علاقات العملاء (CRM). 2) نظم تخطيط موارد المؤسسات (ERP). 3) التجارة الإلكترونية (المنتجات، المخزون، الطلبات).'},
+{q:'كيف تساهم قواعد البيانات في الحكومة؟',a:'1) إدارة الهوية الوطنية. 2) إدارة الموارد العامة (الماء والكهرباء). 3) الأمن الداخلي (تتبع الجرائم والمشتبه بهم).'},
+{q:'ما هي الاتجاهات الحديثة في تطبيقات قواعد البيانات؟',a:'1) الحوسبة السحابية وقواعد البيانات. 2) قواعد البيانات الكبيرة (Big Data). 3) الذكاء الاصطناعي وتحليل البيانات.'},
+{q:'ما هو دور قواعد البيانات في التجارة الإلكترونية؟',a:'1) إدارة المنتجات (الأوصاف، الأسعار، الصور). 2) إدارة المخزون. 3) إدارة الطلبات. 4) تحليل سلوك التسوق.'},
+{q:'ما هو دور قواعد البيانات في نظم CRM؟',a:'تتبع العملاء (الاسم، العنوان، تاريخ الشراء). تحليل سلوك العملاء (أنماط الشراء والتفضيلات). تحسين خدمة العملاء (الوصول السريع للمعلومات).'},
+{q:'ما هو دور قواعد البيانات في نظم ERP؟',a:'تكامل البيانات (توحيد البيانات من مختلف الأقسام). تحسين الكفاءة التشغيلية (الوصول إلى بيانات دقيقة وموحدة في الوقت الفعلي). اتخاذ القرارات المستنيرة. إدارة الموارد البشرية.'},
+{q:'ما هي قواعد البيانات الكبيرة (Big Data)؟',a:'كمية هائلة من البيانات تُجمع من مصادر متعددة وتتميز بالتنوع والسرعة والحجم الضخم. تتطلب تقنيات خاصة لتخزينها وتحليلها واستخراج المعلومات ذات القيمة.'},
+{q:'كيف يدعم الذكاء الاصطناعي قواعد البيانات؟',a:'1) توفير بيانات تدريب عالية الجودة. 2) تكامل البيانات والتحليل. 3) تحسين خوارزميات التعلم الآلي. 4) تقديم التحليلات التنبؤية. 5) أتمتة العمليات.'}]},
+
+{id:5,title:'الوحدة الخامسة: أمن قواعد البيانات',shortTitle:'الوحدة 5: أمن قواعد البيانات',badge:'الوحدة الخامسة — CLO9, CLO10',topics:[
+{title:'1. مقدمة في أمن قواعد البيانات',paragraphs:['أمن قواعد البيانات هو جزء أساسي من إدارة أنظمة قواعد البيانات الحديثة، حيث يلعب دورًا مهمًا في حماية المعلومات الحساسة ومنع الاختراقات والتسريبات التي قد تؤثر على الأعمال التجارية.']},
+{title:'2. التحديات الأمنية في قواعد البيانات الحديثة',paragraphs:['مع التقدم في تقنيات الحوسبة والبيانات، تزايدت التحديات الأمنية التي تواجه قواعد البيانات. من أبرز هذه التحديات:'],list:['<strong>الهجمات السيبرانية والاختراقات:</strong> تتعرض قواعد البيانات لهجمات متعددة مثل SQL Injection، حيث يمكن للهاكرز إدخال أكواد ضارة لاستخراج أو تعديل البيانات.','<strong>سرقة البيانات الحساسة:</strong> بيانات العملاء والشركات تعتبر ذات قيمة كبيرة، ويمكن أن تتعرض للسرقة إذا لم تكن محمية بشكل كافٍ.','<strong>التهديدات الداخلية:</strong> الموظفون الذين لديهم وصول غير مصرح به أو أولئك الذين يسرّبون المعلومات قد يشكلون تهديدًا داخليًا كبيرًا.','<strong>التوافق مع الأنظمة السحابية:</strong> الاعتماد المتزايد على قواعد البيانات السحابية يزيد من التعقيدات الأمنية، حيث تحتاج المؤسسات لحماية بياناتها أثناء النقل والتخزين.','<strong>البرمجيات الضارة (Malware):</strong> يمكن للفيروسات أو البرمجيات الضارة التأثير على قواعد البيانات إذا تم الوصول إليها من خلال أنظمة غير آمنة.']},
+{title:'3. طرق التشفير وحماية البيانات الحساسة',paragraphs:['التشفير هو عملية تحويل البيانات إلى شكل غير مفهوم إلا للمستخدمين المصرح لهم. هناك نوعان رئيسيان من التشفير في قواعد البيانات:'],list:['<strong>التشفير أثناء النقل (Encryption in Transit):</strong> يتم تشفير البيانات أثناء انتقالها بين المستخدمين وقاعدة البيانات أو بين قواعد البيانات نفسها عبر الشبكة. يتم استخدام بروتوكولات مثل TLS (Transport Layer Security).','<strong>التشفير أثناء التخزين (Encryption at Rest):</strong> يتم تشفير البيانات أثناء تخزينها في قاعدة البيانات أو على الأقراص الصلبة. يُستخدم تشفير البيانات لحماية المعلومات الحساسة. يتم الاعتماد على خوارزميات مثل AES (Advanced Encryption Standard).','<strong>التشفير بالمفتاح العام/الخاص:</strong> يتم استخدام أنظمة تشفير تعتمد على مفاتيح عامة وخاصة لضمان تأمين البيانات. المفتاح العام يستخدم لتشفير البيانات، بينما المفتاح الخاص يستخدم لفك التشفير.']},
+{title:'4. التحقق من الهوية وتوثيق الوصول',paragraphs:['<strong>الهدف:</strong> ضمان أن المستخدمين المخولين فقط يمكنهم الوصول إلى قواعد البيانات، ومنع الوصول غير المصرح به.'],list:['<strong>أ. تقنيات التحقق من الهوية:</strong>','<strong>كلمات المرور (Passwords):</strong> استخدام كلمات مرور قوية كوسيلة للتحقق من هوية المستخدمين.','<strong>الرموز المتعددة العوامل (MFA):</strong> استخدام طبقات إضافية من الأمان لتأكيد هوية المستخدمين.','<strong>التوثيق البيومتري (Biometric Authentication):</strong> استخدام سمات بيولوجية مثل بصمات الأصابع، التعرف على الوجه، أو قزحية العين.','<strong>ب. إدارة وتوثيق صلاحيات الوصول:</strong>','<strong>التحكم في الوصول بناءً على الدور (RBAC):</strong> تخصيص الأذونات بناءً على أدوار المستخدمين في المنظمة.','<strong>الوصول المشروط (Conditional Access):</strong> تطبيق سياسات للوصول بناءً على شروط محددة، مثل الموقع الجغرافي أو نوع الجهاز.','<strong>ج. حلول توثيق الهوية المتقدمة:</strong>','<strong>التوثيق الذكي (Smart Authentication):</strong> استخدام تقنيات متقدمة مثل الذكاء الاصطناعي لتحليل سلوك المستخدمين وتحديد أنماط الوصول المشبوهة.','<strong>التوثيق القائم على المخاطر (Risk-Based Authentication):</strong> تعديل متطلبات التحقق بناءً على مستوى المخاطر المرتبط بمحاولة الوصول.']},
+{title:'5. النسخ الاحتياطي والاستعادة',paragraphs:[''],list:['<strong>النسخ الاحتياطي الكامل (Full Backup):</strong> يتم نسخ قاعدة البيانات بالكامل في وقت معين. هذا النوع من النسخ الاحتياطي يستهلك مساحة أكبر ولكنه يضمن استعادة شاملة في حال فقدان البيانات.','<strong>النسخ الاحتياطي التفاضلي (Differential Backup):</strong> يقوم بنسخ البيانات التي تم تغييرها منذ آخر عملية نسخ احتياطي كامل. يوفر هذا النسخ الاحتياطي الوقت والمساحة مقارنة بالنسخ الاحتياطي الكامل.','<strong>النسخ الاحتياطي التزايدي (Incremental Backup):</strong> يقوم بنسخ البيانات التي تم تغييرها منذ آخر عملية نسخ احتياطي، سواء كانت تامة أو تفاضلية أو تزايدية. يستهلك أقل قدر من المساحة لكنه قد يستغرق وقتًا أطول لاستعادة البيانات.','<strong>استعادة البيانات (Data Recovery):</strong> هو العملية التي يتم من خلالها استرجاع البيانات المفقودة أو التالفة من النسخ الاحتياطية. يجب أن تكون هناك خطة لاستعادة البيانات في حالة حدوث أعطال مفاجئة.']},
+{title:'6. الامتثال للقوانين الدولية والمحلية لحماية البيانات',paragraphs:['الامتثال للقوانين واللوائح التنظيمية جزء حيوي في حماية البيانات، حيث تفرض هذه القوانين معايير صارمة لحماية الخصوصية وتأمين البيانات. من أهم القوانين المعمول بها:','<strong>اللائحة العامة لحماية البيانات (GDPR):</strong> تُعد من أهم القوانين في حماية البيانات، وتم تطبيقها في الاتحاد الأوروبي في عام 2018، وتهدف إلى حماية خصوصية المواطنين الأوروبيين.']},
+{title:'7. تصنيف البيانات وأدوات وإجراءات الأمن',paragraphs:['تصنيف البيانات ينطوي على تقسيم البيانات إلى فئات أو مستويات بناءً على حساسيتها وتأثيرها المحتمل على المنظمة إذا تم تسريبها أو الوصول إليها دون إذن.'],list:['<strong>البيانات العامة (Public Data):</strong> بيانات يمكن مشاركتها علنًا دون التأثير على الأمان أو الخصوصية. مثال: معلومات حول المنتجات والخدمات.','<strong>البيانات الداخلية (Internal Data):</strong> بيانات مخصصة للاستخدام الداخلي فقط. مثال: تقارير الأداء الداخلية.','<strong>البيانات الحساسة (Sensitive Data):</strong> بيانات قد تؤثر بشكل كبير على الأفراد أو الشركات إذا تم الكشف عنها. مثال: معلومات شخصية مثل أرقام الهواتف، بيانات البريد الإلكتروني.','<strong>البيانات السرية (Confidential Data):</strong> بيانات تعتبر حساسة للغاية وتتطلب حماية قوية. مثال: بيانات مالية، مجالات طبية، معلومات تجارية سرية.','<strong>البيانات السرية للغاية (Highly Confidential Data):</strong> بيانات ذات حساسية قصوى يجب حمايتها بأقصى درجات الأمان. مثال: أسرار الشركة، معلومات استخباراتية.']},
+{title:'8. أدوات مراقبة الأنشطة والأحداث الأمنية',paragraphs:['<strong>1) سجلات الأنشطة (Activity Logs):</strong> تحتوي على معلومات تفصيلية حول جميع العمليات والأنشطة التي تحدث في قاعدة البيانات. الوظيفة: تساعد في تتبع الأنشطة، اكتشاف سلوك غير معتاد، وتحليل المشكلات.','<strong>2) أنظمة مراقبة قواعد البيانات (Database Monitoring Systems):</strong> أدوات متخصصة لمراقبة الأداء والأمان. أمثلة: SolarWinds Database Performance Analyzer, New Relic.','<strong>3) برامج تحليل السجلات (Log Analysis Tools):</strong> أدوات لتحليل السجلات وتحديد الأنماط غير العادية. أمثلة: Splunk, ELK Stack.','<strong>4) أنظمة الكشف عن التسلل (IDS):</strong> أنظمة تتبع نشاط الشبكة والكشف عن أي محاولات اختراق. أمثلة: Snort, Suricata.']},
+{title:'9. أمن قواعد البيانات في بيئات متعددة',paragraphs:['<strong>أ. أمن قواعد البيانات في البيئات السحابية:</strong>'],list:['<strong>خدمات السحاب مثل AWS وAzure:</strong> تتضمن خدمات السحاب المقدمة من مزودي الخدمات مثل AWS (Amazon Web Services) وMicrosoft Azure حلولًا متنوعة لأمن قواعد البيانات.','<strong>أدوات AWS:</strong> Amazon RDS, Amazon Aurora, AWS IAM, AWS KMS.','<strong>أدوات Azure:</strong> Azure SQL Database, Azure Key Vault, Azure Security Center.','<strong>استراتيجيات الأمان السحابية:</strong> التشفير، التحكم في الوصول، مراقبة الأمان.']},
+{title:'10. إدارة الأمان في قواعد البيانات الكبيرة والمعقدة',paragraphs:['<strong>أ. استراتيجيات تأمين قواعد البيانات الضخمة (Big Data):</strong>'],list:['<strong>التشفير:</strong> حماية البيانات من الوصول غير المصرح به باستخدام تقنيات التشفير.','<strong>إدارة الوصول:</strong> التحكم في من يمكنه الوصول إلى البيانات الحساسة بناءً على أدوار وصلاحيات محددة.','<strong>مراقبة النشاطات:</strong> تتبع وتحليل النشاطات داخل قواعد البيانات للكشف عن أي سلوك غير طبيعي.','<strong>التدقيق والتقارير:</strong> إجراء تدقيقات دورية وتحليل تقارير الأمان لتقييم فعالية استراتيجيات الأمان.']},
+{title:'11. الأمان في أنظمة قواعد البيانات التكيفية',paragraphs:['<strong>أ. أمان قواعد البيانات التي تدعم التعديلات التلقائية والتوسع:</strong>'],list:['<strong>التوسع التلقائي:</strong> القدرة على زيادة الموارد تلقائيًا استجابةً لزيادة الأحمال.','<strong>التعديلات التلقائية:</strong> القدرة على تعديل البنية والموارد بناءً على الطلبات والتغيرات.','<strong>ب. التحديات الأمنية في قواعد البيانات القابلة للتكيف:</strong>','<strong>إدارة الأمان الديناميكي:</strong> الحفاظ على أمان قواعد البيانات أثناء التعديلات والتوسع.','<strong>تحديات الأمان التلقائية:</strong> ضمان أن التحديات التلقائية تتضمن إجراءات أمان فعالة.','<strong>ج. تقنيات لضمان أمان قواعد البيانات المتطورة:</strong>','<strong>تقنيات الأمان التكيفية:</strong> أنظمة الأمان التكيفية (أدوات تستخدم AI والتعلم الآلي)، إدارة المخاطر الديناميكية.','<strong>اختبارات الأمان التكيفية:</strong> اختبارات القلم الديناميكي.']}],
+questions:[
+{q:'ما هو الهدف من استخدام التحكم في الوصول إلى قواعد البيانات؟',options:['حماية البيانات','منح الوصول للجميع','تحسين الأداء','زيادة التخزين'],correct:0},
+{q:'أي من القوانين التالية يختص بحماية البيانات؟',options:['GDPR','قانون الطرقات','قانون الملكية الفكرية','قانون العمل'],correct:0},
+{q:'ما هو الهدف من تشفير البيانات في قواعد البيانات؟',options:['حماية البيانات من الوصول غير المصرح به','تحسين أداء قاعدة البيانات','منع حذف البيانات','زيادة حجم البيانات'],correct:0},
+{q:'أي من الخيارات التالية يمثل نظامًا لإدارة الأمان في قواعد البيانات؟',options:['التحكم في الوصول بناءً على الأدوار RBAC','لغة معالجة البيانات DML','لغة الاستعلامات SQL','نظام التشغيل Windows'],correct:0},
+{q:'ما هو نموذج ACID في قواعد البيانات؟',options:['نموذج للتوسع الأفقي','نموذج لدعم المعاملات والاتساق','نموذج للتشفير','نموذج للنسخ الاحتياطي'],correct:1}],
+flashCards:[
+{q:'ما هو أمن قواعد البيانات؟',a:'جزء أساسي من إدارة أنظمة قواعد البيانات الحديثة، حيث يلعب دورًا مهمًا في حماية المعلومات الحساسة ومنع الاختراقات والتسريبات التي قد تؤثر على الأعمال التجارية.'},
+{q:'ما هي التحديات الأمنية في قواعد البيانات الحديثة؟',a:'1) الهجمات السيبرانية والاختراقات (مثل SQL Injection). 2) سرقة البيانات الحساسة. 3) التهديدات الداخلية. 4) التوافق مع الأنظمة السحابية. 5) البرمجيات الضارة (Malware).'},
+{q:'ما هي أنواع التشفير في قواعد البيانات؟',a:'1) التشفير أثناء النقل (Encryption in Transit) - بروتوكولات مثل TLS. 2) التشفير أثناء التخزين (Encryption at Rest) - خوارزميات مثل AES. 3) التشفير بالمفتاح العام/الخاص.'},
+{q:'ما هي تقنيات التحقق من الهوية؟',a:'1) كلمات المرور (Passwords). 2) الرموز المتعددة العوامل (MFA). 3) التوثيق البيومتري (Biometric Authentication).'},
+{q:'ما هي أنواع النسخ الاحتياطي الثلاثة؟',a:'1) النسخ الاحتياطي الكامل (Full Backup). 2) النسخ الاحتياطي التفاضلي (Differential Backup). 3) النسخ الاحتياطي التزايدي (Incremental Backup).'},
+{q:'ما هي تصنيفات البيانات؟',a:'1) البيانات العامة (Public Data). 2) البيانات الداخلية (Internal Data). 3) البيانات الحساسة (Sensitive Data). 4) البيانات السرية (Confidential Data). 5) البيانات السرية للغاية (Highly Confidential Data).'},
+{q:'ما هي أدوات مراقبة الأنشطة الأمنية؟',a:'1) سجلات الأنشطة (Activity Logs). 2) أنظمة مراقبة قواعد البيانات (Database Monitoring Systems). 3) برامج تحليل السجلات (Log Analysis Tools). 4) أنظمة الكشف عن التسلل (IDS).'},
+{q:'ما هي استراتيجيات تأمين قواعد البيانات الضخمة؟',a:'1) التشفير. 2) إدارة الوصول. 3) مراقبة النشاطات. 4) التدقيق والتقارير.'},
+{q:'ما هو GDPR؟',a:'اللائحة العامة لحماية البيانات (General Data Protection Regulation). تُعد من أهم القوانين في حماية البيانات، وتم تطبيقها في الاتحاد الأوروبي في عام 2018، وتهدف إلى حماية خصوصية المواطنين الأوروبيين.'},
+{q:'ما هو RBAC؟',a:'التحكم في الوصول بناءً على الدور (Role-Based Access Control). تخصيص الأذونات بناءً على أدوار المستخدمين في المنظمة مثل "مسؤول النظام"، "مدير"، "موظف".'},
+{q:'ما هي تقنيات التحقق المتقدمة؟',a:'1) التوثيق الذكي (Smart Authentication) - استخدام AI لتحليل سلوك المستخدمين. 2) التوثيق القائم على المخاطر (Risk-Based Authentication) - تعديل متطلبات التحقق بناءً على مستوى المخاطر.'},
+{q:'ما هي إدارة المخاطر (Risk Management)؟',a:'عملية منهجية تهدف إلى تحديد المخاطر المحتملة، وتحليلها، ووضع إجراءات وقائية واستجابات مناسبة للحد من آثارها.'}]}
+];
+
+const tfQuestions=[
+{q:'تشفير البيانات يساعد في حماية المعلومات الحساسة في قواعد البيانات.',correct:true},
+{q:'يمكن الوصول إلى جميع البيانات في قاعدة البيانات بدون تسجيل الدخول.',correct:false},
+{q:'الامتثال لقوانين حماية البيانات غير ضروري لأمن قواعد البيانات.',correct:false},
+{q:'تشفير البيانات يضمن حماية البيانات الحساسة في قواعد البيانات من الوصول غير المصرح به.',correct:true},
+{q:'يمكن لجميع المستخدمين الوصول إلى البيانات المحمية في قواعد البيانات دون الحاجة إلى صلاحيات.',correct:false},
+{q:'الامتثال لقوانين حماية البيانات يساهم في تعزيز أمن قواعد البيانات.',correct:true},
+{q:'قواعد البيانات لا تلعب دورًا كبيرًا في إدارة التجارة الإلكترونية.',correct:false},
+{q:'استخدام قواعد البيانات في الحكومة يسهل إدارة البيانات الحكومية وتحليلها.',correct:true},
+{q:'لا تستخدم قواعد البيانات في القطاعات الصحية والتجارية.',correct:false},
+{q:'تستخدم قواعد البيانات في تحسين إدارة المخزون في التجارة الإلكترونية.',correct:true}
+];
+
+const mcqQuestions=[
+{q:'أي من التالي ليس من مكونات نظم المعلومات الأساسية؟',options:['المكونات المادية','البرمجيات','الأفراد','التسويق الرقمي'],correct:3},
+{q:'ما هو العنصر الذي لا يشمل مثلث CIA لأمن المعلومات؟',options:['السرية','السلامة','التوافرية','التكامل التقني'],correct:3},
+{q:'أي نظام يستخدم لدعم القرارات غير المهيكلة والمعقدة؟',options:['TPS','MIS','DSS','EIS'],correct:2},
+{q:'ما هي الميزة الرئيسية لقواعد بيانات NoSQL؟',options:['المرونة في تخزين البيانات غير المنظمة','عدم القدرة على التوسع','الحاجة إلى تخزين البيانات في جداول','عدم دعم التوسع الأفقي'],correct:0},
+{q:'ما هو الهدف من استخدام التحكم في الوصول إلى قواعد البيانات؟',options:['حماية البيانات','منح الوصول للجميع','تحسين الأداء','زيادة التخزين'],correct:0}
+];
+
+/* ======================= NAVIGATION ======================= */
+function isUnitUnlocked(id){if(id===1)return true;return state.completedUnits.includes(id-1)}
+function isUnitCompleted(id){return state.completedUnits.includes(id)}
+
+function renderSidebar(){
+  const nav=document.getElementById('navContainer');
+  let html='';
+  units.forEach(u=>{
+    const unlocked=isUnitUnlocked(u.id);
+    const completed=isUnitCompleted(u.id);
+    const active=state.currentPage==='unit'+u.id;
+    let cls='nav-item';
+    if(!unlocked)cls+=' locked';
+    if(active)cls+=' active';
+    let s='';
+    if(completed)s='<span class="nav-status">✓</span>';
+    else if(!unlocked)s='<span class="nav-status">🔒</span>';
+    html+=`<button class="${cls}" onclick="${unlocked?`navigate('unit${u.id}')`:`showToast('🔒 أكمل الوحدة السابقة أولاً','error')`}">
+      <span class="nav-icon">${completed?'✅':unlocked?'📖':'🔒'}</span>
+      <span class="nav-text">${u.shortTitle}</span>${s}</button>`;
+  });
+  const allDone=units.every(u=>isUnitCompleted(u.id));
+  // Practical page
+  const pActive=state.currentPage==='practical';
+  html+=`<button class="nav-item ${pActive?'active':''}" onclick="navigate('practical')" style="border-top:1px solid var(--border);border-radius:0;padding-top:14px;margin-top:6px;">
+    <span class="nav-icon">🛠️</span><span class="nav-text">الجانب العملي — SQLite</span></button>`;
+  // MongoDB
+  const mActive=state.currentPage==='mongodb';
+  html+=`<button class="nav-item ${mActive?'active':''}" onclick="navigate('mongodb')">
+    <span class="nav-icon">🍃</span><span class="nav-text">MongoDB Atlas</span></button>`;
+  // Requirements
+  const rActive=state.currentPage==='requirements';
+  html+=`<button class="nav-item ${rActive?'active':''}" onclick="navigate('requirements')">
+    <span class="nav-icon">📋</span><span class="nav-text">المطلوب العملي والتسليم</span></button>`;
+  // Assessment
+  const aActive=state.currentPage==='assessment';
+  let aCls='nav-item';
+  if(!allDone)aCls+=' locked';
+  if(aActive)aCls+=' active';
+  let aS='';
+  if(state.assessment.submitted)aS='<span class="nav-status">✓</span>';
+  else if(!allDone)aS='<span class="nav-status">🔒</span>';
+  html+=`<button class="${aCls}" onclick="${allDone?`navigate('assessment')`:`showToast('🔒 أكمل جميع الوحدات أولاً','error')`}" style="border-top:1px solid var(--border);border-radius:0;padding-top:14px;margin-top:6px;">
+    <span class="nav-icon">${state.assessment.submitted?'🏆':allDone?'📝':'🔒'}</span>
+    <span class="nav-text">التقييم الشامل</span>${aS}</button>`;
+  nav.innerHTML=html;
+}
+
+function navigate(page){state.currentPage=page;saveState(true);window.scrollTo({top:0,behavior:'smooth'});renderSidebar();renderContent();if(window.innerWidth<=900)document.getElementById('sidebar').classList.remove('open')}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
+function renderContent(){
+  if(state.currentPage.startsWith('unit')){const id=parseInt(state.currentPage.replace('unit',''));renderUnit(id)}
+  else if(state.currentPage==='assessment'){renderAssessment()}
+  else if(state.currentPage==='practical'){renderPractical()}
+  else if(state.currentPage==='mongodb'){renderMongoDB()}
+  else if(state.currentPage==='requirements'){renderRequirements()}
+}
+
+function renderFlashCards(uid){
+  const u=units.find(x=>x.id===uid);
+  if(!u||!u.flashCards)return'';
+  let h=`<div class="flash-section" id="flash-${uid}"><div class="flash-header"><h3>🃏 بطاقات تعليمية — ${u.flashCards.length} بطاقات</h3><span class="flash-counter">انقر البطاقة لقلبها</span></div><div class="flash-grid">`;
+  u.flashCards.forEach((fc,i)=>{
+    h+=`<div class="flash-card" onclick="this.classList.toggle('flipped')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped')}">
+      <div class="flash-card-inner">
+        <div class="flash-card-face flash-card-front">
+          <span class="fc-num">بطاقة ${i+1}</span>
+          <div class="fc-question">${fc.q}</div>
+          <div class="fc-hint">👆 انقر لعرض الإجابة</div>
+        </div>
+        <div class="flash-card-face flash-card-back">
+          <div class="fc-answer-label">💡 الإجابة</div>
+          <div class="fc-answer">${fc.a}</div>
+        </div>
+      </div></div>`;
+  });
+  h+=`</div><div class="flash-controls">
+    <button class="flash-btn" onclick="flipAllFlash(${uid},false)">🔓 قلب جميع البطاقات</button>
+    <button class="flash-btn" onclick="flipAllFlash(${uid},true)">🔒 إعادة الكل</button>
+    <button class="flash-btn" onclick="shuffleFlash(${uid})">🔀 خلط البطاقات</button>
+  </div></div>`;
+  return h;
+}
+function flipAllFlash(uid,back){const c=document.getElementById('flash-'+uid);if(!c)return;c.querySelectorAll('.flash-card').forEach(x=>{if(back)x.classList.remove('flipped');else x.classList.add('flipped')})}
+function shuffleFlash(uid){const c=document.getElementById('flash-'+uid);if(!c)return;const g=c.querySelector('.flash-grid');const cards=Array.from(g.children);for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));g.appendChild(cards[j]);cards.splice(j,1)}cards.forEach(x=>g.appendChild(x));g.querySelectorAll('.flash-card').forEach(x=>x.classList.remove('flipped'));showToast('🔀 تم خلط البطاقات','success')}
+
+function renderUnit(uid){
+  const u=units.find(x=>x.id===uid);
+  if(!u)return;
+  document.getElementById('pageTitle').textContent=u.shortTitle;
+  const ansCount=state.unitAnswers[uid]?Object.keys(state.unitAnswers[uid]).length:0;
+  const finished=isUnitCompleted(uid);
+  let h=`<div class="slide-up"><div class="unit-badge">${u.badge}</div><h2 style="font-size:1.35rem;margin-bottom:20px;color:var(--text);line-height:1.5;">${u.title}</h2>`;
+  u.topics.forEach((t,i)=>{
+    h+=`<div class="topic"><h3><span class="topic-num">${i+1}</span>${t.title}</h3>`;
+    if(t.paragraphs)t.paragraphs.forEach(p=>{h+=`<p>${p}</p>`});
+    if(t.list&&t.list.length){h+='<ul>';t.list.forEach(li=>{h+=`<li>${li}</li>`});h+='</ul>'}
+    if(t.paragraphs2)t.paragraphs2.forEach(p=>{h+=`<p>${p}</p>`});
+    h+='</div>';
+  });
+  h+=renderFlashCards(uid);
+  h+=`<div class="divider"></div><h3 style="color:var(--primary);margin-bottom:8px;">✍️ أسئلة التقويم الذاتي</h3><p style="color:var(--text-secondary);font-size:0.88rem;margin-bottom:20px;">أجب على الأسئلة التالية، وستظهر النتيجة عند إنهاء الوحدة.</p>`;
+  u.questions.forEach((q,qi)=>{
+    const sel=state.unitAnswers[uid]&&state.unitAnswers[uid][qi]!==undefined?state.unitAnswers[uid][qi]:null;
+    h+=`<div class="question-block"><div class="q-text"><span class="q-num">${qi+1}</span>${q.q}</div><div class="options">`;
+    q.options.forEach((opt,oi)=>{
+      const s=sel===oi?' selected':'';
+      const L=['أ','ب','ج','د'];
+      h+=`<div class="option${s}" onclick="selectUnitAnswer(${uid},${qi},${oi})" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectUnitAnswer(${uid},${qi},${oi})}"><span class="opt-letter">${L[oi]}</span><span>${opt}</span></div>`;
+    });
+    h+='</div></div>';
+  });
+  const totalQ=u.questions.length;
+  const prog=Math.round((ansCount/totalQ)*100);
+  if(finished){
+    const sc=state.unitScores[uid]||0;
+    h+=`<div class="score-box"><div class="score-num">${sc}%</div><div class="score-label">نتيجة الوحدة</div></div><p style="text-align:center;color:var(--success);font-weight:700;margin-bottom:16px;">✅ تم إنهاء هذه الوحدة بنجاح</p><div class="export-actions">`;
+    if(uid<5)h+=`<button class="btn btn-primary" onclick="navigate('unit${uid+1}')">← الوحدة التالية</button>`;
+    else h+=`<button class="btn btn-primary" onclick="navigate('practical')">🛠️ الجانب العملي ←</button>`;
+    h+='</div>';
+  }else{
+    h+=`<div class="progress-track"><div class="progress-fill" style="width:${prog}%"></div></div><p style="font-size:0.85rem;color:var(--text-secondary);text-align:center;margin-bottom:16px;">تمت الإجابة على ${ansCount} من ${totalQ} أسئلة</p><div class="btn-row" style="justify-content:center;"><button class="btn btn-primary btn-large" onclick="finishUnit(${uid})" ${ansCount<totalQ?'disabled':''}>🏁 إنهاء الوحدة</button></div>`;
+    if(ansCount<totalQ)h+='<p style="text-align:center;color:var(--warning);font-size:0.85rem;margin-top:8px;">⚠️ يجب الإجابة على جميع الأسئلة</p>';
+  }
+  h+='</div>';
+  document.getElementById('content').innerHTML=h;
+}
+
+function selectUnitAnswer(uid,qi,oi){if(isUnitCompleted(uid))return;if(!state.unitAnswers[uid])state.unitAnswers[uid]={};state.unitAnswers[uid][qi]=oi;saveState(true);renderUnit(uid)}
+function finishUnit(uid){const u=units.find(x=>x.id===uid);if(!u)return;const a=state.unitAnswers[uid]||{};let c=0;u.questions.forEach((q,qi)=>{if(a[qi]===q.correct)c++});const sc=Math.round((c/u.questions.length)*100);state.unitScores[uid]=sc;if(!state.completedUnits.includes(uid))state.completedUnits.push(uid);saveState();renderSidebar();renderUnit(uid);showToast(`✅ تم إنهاء الوحدة بنتيجة ${sc}%`,'success')}
+
+/* ======================= PRACTICAL ======================= */
+function renderPractical(){
+  document.getElementById('pageTitle').textContent='الجانب العملي — SQLite و DB Browser';
+  let h=`<div class="slide-up"><div class="unit-badge">الجانب العملي — الجزء الأول</div>
+  <h2 style="font-size:1.35rem;margin-bottom:20px;color:var(--text);line-height:1.5;">🛠️ قاعدة بيانات SQLite وأداة DB Browser for SQLite</h2>
+
+  <div class="playlist-box">
+    <h4>▶️ رابط جميع الدروس العملية (قائمة التشغيل كاملة)</h4>
+    <a class="video-link" href="https://www.youtube.com/watch?v=Uu5SI5aPN18&list=PLjJNtqdlIElBxodEr0pejCWqP-OTlbRlV&index=1" target="_blank" style="font-size:0.95rem;padding:12px 24px;">▶️ مشاهدة جميع الدروس على YouTube</a>
+    <div class="playlist-url">https://www.youtube.com/watch?v=Uu5SI5aPN18&list=PLjJNtqdlIElBxodEr0pejCWqP-OTlbRlV&index=1</div>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">1</span>مقدمة في قواعد البيانات مفتوحة المصدر</h3>
+    <p>إن قواعد البيانات مفتوحة المصدر هي أنظمة إدارة قواعد بيانات تتوفر برمجياتها للمستخدمين بشكل مجاني مع إمكانية الوصول إلى الشيفرة المصدرية، مما يسمح لهم بتعديلها وتطويرها حسب احتياجاتهم. حيث أن هذه الأنظمة تتيح للشركات والمؤسسات استخدام حلول مرنة وفعالة من حيث التكلفة مقارنة بالأنظمة التجارية المغلقة.</p>
+    <p>قواعد البيانات العلائقية مفتوحة المصدر تعتمد على النموذج العلائقي، حيث تُخزَّن البيانات في جداول مترابطة باستخدام علاقات رياضية. يعد هذا النوع شائعًا جدًا نظرًا لقوته في إدارة البيانات المعقدة وضمان التكامل بينها. من أشهر الأمثلة على قواعد البيانات العلائقية مفتوحة المصدر:</p>
+    <ul>
+      <li><strong>MySQL:</strong> قاعدة بيانات شهيرة وسريعة الأداء، مستخدمة في العديد من التطبيقات الويب مثل WordPress و Drupal.</li>
+      <li><strong>PostgreSQL:</strong> تتميز بدعم ميزات متقدمة مثل التزامن المتعدد واللامتثالية للمعايير، وتستخدم في الأنظمة الكبيرة والمعقدة.</li>
+      <li><strong>MariaDB:</strong> مشتقة من MySQL، وتعد بديلًا متطورًا لها مع التركيز على تحسين الأداء وميزات إضافية.</li>
+      <li><strong>SQLite:</strong> هي قاعدة بيانات علائقية مفتوحة المصدر وخفيفة الوزن، تتميز بأنها تعمل بدون الحاجة إلى خادم قواعد بيانات مركزي. على عكس قواعد البيانات مثل MySQL أو PostgreSQL التي تتطلب إعدادات وإدارة خوادم معقدة، فإن SQLite مصممة للعمل مباشرة ضمن التطبيقات كملف بيانات مدمج.</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">2</span>مزايا اختيار SQLite</h3>
+    <ul>
+      <li><strong>بسيطة وسهلة التعلم:</strong> حيث تتميز بأنها قاعدة بيانات خفيفة، لا تحتاج إلى إعدادات خادم، مما يجعلها مثالية للمبتدئين.</li>
+      <li><strong>محمولة:</strong> حيث يمكن استخدامها مباشرة مع التطبيقات الصغيرة على الأجهزة الشخصية.</li>
+      <li><strong>مجانية ومفتوحة المصدر:</strong> لا توجد تكلفة لاستخدامها أو توزيعها.</li>
+      <li><strong>مثالية للمشاريع الصغيرة:</strong> حيث تعد مثالية لفهم أساسيات قواعد البيانات دون تعقيد كبير.</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">3</span>قاعدة بيانات SQLite</h3>
+    <p>تصنف قاعدة بيانات SQLite ضمن قواعد البيانات العلائقية (Relational Databases). وهي تختلف عن قواعد البيانات التقليدية الكبيرة مثل MySQL وPostgreSQL من حيث أنها:</p>
+    <ul>
+      <li><strong>خفيفة الوزن:</strong> تعمل بدون الحاجة إلى خادم (serverless)، أي أنها لا تحتاج إلى إدارة معقدة أو تشغيل خادم مخصص. كل شيء يعمل داخل ملف واحد على النظام.</li>
+      <li><strong>قاعدة بيانات مدمجة:</strong> يتم تخزين البيانات في ملف واحد على القرص، مما يجعلها مثالية للتطبيقات الصغيرة والمحمولة، حيث لا تحتاج إلى إعدادات معقدة أو اتصال بشبكة.</li>
+      <li><strong>لغة الاستعلامات الهيكلية (SQL):</strong> تستخدم SQLite لغة SQL لتنفيذ الاستعلامات وإدارة البيانات، مثل قواعد البيانات العلائقية الأخرى.</li>
+      <li><strong>غير مخصصة للتطبيقات الضخمة:</strong> على الرغم من أنها قوية وسهلة الاستخدام، إلا أن SQLite ليست الخيار الأفضل للتطبيقات التي تتطلب مقاييس كبيرة جدًا أو تحتاج إلى العديد من المستخدمين المتزامنين الذين يكتبون في نفس الوقت.</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">4</span>خصائص SQLite كقاعدة بيانات علائقية</h3>
+    <ul>
+      <li>تعتمد على الجداول لتنظيم البيانات في صفوف وأعمدة.</li>
+      <li>تدعم العلاقات بين الجداول عبر المفاتيح الخارجية (Foreign Keys).</li>
+      <li>تدعم العمليات التقليدية مثل الإضافة، الحذف، التعديل، والبحث عبر SQL.</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">5</span>طرق الدخول إلى قاعدة بيانات SQLite</h3>
+    <p>إن الدخول إلى SQLite بسيط وسهل لأنها قاعدة بيانات خفيفة ولا تحتاج إلى إعدادات خادم (server) معقدة. حيث يمكن استخدامها من خلال واجهة الأوامر أو عبر أدوات رسمية مخصصة.</p>
+    <p><strong>الطريقة الأولى: باستخدام سطر الأوامر (Command Line Interface - CLI):</strong></p>
+    <ul>
+      <li>تنزيل SQLite من الموقع الرسمي <code>https://sqlite.org/download.html</code> بناءً على نظام التشغيل.</li>
+      <li>استخراج الملفات بعد التنزيل.</li>
+      <li>فتح سطر الأوامر (Command Prompt على Windows أو Terminal على macOS).</li>
+      <li>التنقل إلى مجلد SQLite باستخدام أمر <code>cd</code>.</li>
+      <li>الدخول إلى SQLite بكتابة <code>sqlite3</code> ثم الضغط على Enter.</li>
+      <li>إنشاء أو فتح قاعدة بيانات: <code>sqlite3 mydatabase.db</code></li>
+    </ul>
+    <p><strong>الطريقة الثانية: استخدام أدوات رسومية (GUI) لـ SQLite:</strong></p>
+    <ul>
+      <li><strong>DB Browser for SQLite:</strong> برنامج رسومي بسيط يمكنك من إنشاء وفتح واستعراض قواعد بيانات SQLite. وهذه الأداة هي التي سوف تعتمد في الجانب العملي في هذا المقرر.</li>
+      <li><strong>SQLite Studio:</strong> أداة رسومية أخرى توفر واجهة سهلة للتعامل مع قواعد البيانات.</li>
+      <li><strong>الدخول إلى SQLite عبر لغات البرمجة:</strong> يمكن الوصول إلى SQLite ودمجها في التطبيقات باستخدام لغات البرمجة مثل Python, PHP, أو JavaScript.</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">6</span>DB Browser for SQLite</h3>
+    <p>يمكن تنزيل هذه الأداة الرسمية الخاصة بالتعامل مع قاعدة بيانات SQLITE عن طريق الرابط:</p>
+    <p><a href="https://sqlitebrowser.org/dl/" target="_blank" style="color:var(--primary);font-weight:700;">https://sqlitebrowser.org/dl/</a></p>
+    <p>حيث يتم تنزيل النسخة المتوافقة مع نسخة الويندوز لديك 32 بت أو 64 بت.</p>
+    <div class="step-box"><strong>💡 ملاحظة:</strong> بعد تنزيل البرنامج ستجد الواجهة الرئيسية التي تحتوي على: New Database, Open Database, Write Changes, Revert Changes, Undo, Open Project, Save Project, Attach Database, Close Database. بالإضافة إلى تبويبات: Database Structure, Browse Data, Edit Pragmas, Execute SQL.</div>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">7</span>مثال عملي على استخدام DB Browser for SQLite</h3>
+    <p><strong>الهدف:</strong> قم بإنشاء قاعدة بيانات لإدارة معلومات الطلبة والمساقات التعليمية التي يتلقونها وقم بتسميتها <code>student_management.db</code> وقم بتخزين هذه القاعدة على سطح المكتب لديك.</p>
+    <p><strong>خطوات الحل:</strong></p>
+    <ul>
+      <li>افتح DB Browser for SQLite.</li>
+      <li>اختر New Database قاعدة بيانات جديدة.</li>
+      <li>اختر موقعًا على جهازك وليكن سطح المكتب واحفظ ملف قاعدة البيانات، <code>student_management.db</code>.</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">8</span>تصميم وإنشاء الجداول</h3>
+    <p><strong>جدول الطلبة "students":</strong></p>
+    <ul>
+      <li>student_id — INTEGER — Primary Key, Auto Increment</li>
+      <li>first_name — TEXT</li>
+      <li>last_name — TEXT</li>
+      <li>email — TEXT</li>
+      <li>phone — TEXT</li>
+    </ul>
+    <p><strong>جدول المساقات "Courses":</strong></p>
+    <ul>
+      <li>course_id — INTEGER — Primary Key, Auto Increment</li>
+      <li>course_name — TEXT</li>
+      <li>credits — INTEGER</li>
+    </ul>
+    <p><strong>جدول التسجيلات "Enrollments":</strong></p>
+    <ul>
+      <li>enrollment_id — INTEGER — Primary Key, Auto Increment</li>
+      <li>student_id — INTEGER — Foreign Key مرتبط بـ student_id في جدول Students</li>
+      <li>course_id — INTEGER — Foreign Key مرتبط بـ course_id في جدول Courses</li>
+    </ul>
+    <div class="step-box"><strong>💡 ملاحظات هامة:</strong> يجب تعيين student_id كمفتاح رئيسي (Primary Key) ويتم تفعيلها بالضغط على مربع PK المحاذي للسطر student_id وتمكين خاصية Auto Increment. مربع AI بالضغط عليها تعني أنه يتم زيادة الرقم تلقائيًا لكل سجل جديد (ترقيم تلقائي).</div>
+    <p>نلاحظ أسفل الشاشة أن الحقول وتسمياتها وصفاتها قد تم كتابتها بلغة SQL تلقائيًا.</p>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">9</span>إنشاء العلاقات (Foreign Keys)</h3>
+    <p>من أجل جعل حقل student_id مفتاحًا أجنبيًا مرتبطًا مع جدول Students:</p>
+    <ul>
+      <li>في شاشة التصميم السابقة وضمن تبويب Foreign Keys نضغط على Add.</li>
+      <li>في خانة columns ننقر نقرًا مزدوجًا في هذه الخانة ونختار منها student_id بالضغط على السهم الأيمن لوضعها في خانة "Selected".</li>
+      <li>أيضًا نقوم في خانة reference من خلال السهم باختيار جدول "students" وذلك من أجل ربط جدول enrollment التسجيلات بجدول الطلبة students خلال حقل student_id.</li>
+      <li>ثم نضغط على OK.</li>
+    </ul>
+    <p>وكذلك الأمر في السطر التالي في جدول enrollment يوجد إعدادات <code>Foreign Key</code> يربط بـ <code>course_id</code> في جدول Courses. وهو جعل course_id مفتاح خارجي مرتبط مع جدول courses.</p>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">10</span>إدخال البيانات</h3>
+    <p><strong>جدول الطالب (Students):</strong></p>
+    <ul>
+      <li>student_id=1 | first_name=Ahmad | last_name=Salem | email=ahmad.salem@example.com | phone=1234567890</li>
+      <li>student_id=2 | first_name=Noura | last_name=Saleh | email=noura.saleh@example.com | phone=0987654321</li>
+      <li>student_id=3 | first_name=Sari | last_name=Masri | email=sari.masri@example.com | phone=1122334455</li>
+    </ul>
+    <p><strong>جدول المساقات:</strong></p>
+    <ul>
+      <li>course_id=1 | course_name=Database Systems | credits=3</li>
+      <li>course_id=2 | course_name=Cloud Computing | credits=2</li>
+      <li>course_id=3 | course_name=Project Management | credits=2</li>
+    </ul>
+    <p><strong>جدول التسجيلات (Enrollments):</strong></p>
+    <ul>
+      <li>enrollment_id=1 | student_id=1 | course_id=1</li>
+      <li>enrollment_id=2 | student_id=1 | course_id=2</li>
+      <li>enrollment_id=3 | student_id=2 | course_id=1</li>
+      <li>enrollment_id=4 | student_id=3 | course_id=3</li>
+      <li>enrollment_id=5 | student_id=3 | course_id=2</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">11</span>عرض البيانات بواسطة كود SQL</h3>
+    <p><strong>مثال 1:</strong> عرض جميع بيانات جدول الطالب:</p>
+    <pre>SELECT * FROM Students;</pre>
+    <p><strong>توضيح الكود:</strong></p>
+    <ul>
+      <li><strong>SELECT:</strong> هو الأمر المستخدم لاسترجاع البيانات من الجداول.</li>
+      <li><strong>*:</strong> يعني جميع الأعمدة. في هذا السياق، سيعرض جميع الأعمدة الموجودة في جدول Students.</li>
+      <li><strong>FROM Students:</strong> يحدد الجدول الذي سيتم استرجاع البيانات منه، وهو Students هنا.</li>
+    </ul>
+    <p><strong>مثال 2:</strong> عرض أسماء المساقات التي سجلها الطالب الذي يحمل الرقم 1:</p>
+    <pre>SELECT Students.first_name, Students.last_name, Courses.course_name
+FROM Students
+JOIN Enrollments ON Students.student_id = Enrollments.student_id
+JOIN Courses ON Enrollments.course_id = Courses.course_id
+WHERE Students.student_id = 1;</pre>
+    <p><strong>تفاصيل وشرح الكود السابق:</strong></p>
+    <ul>
+      <li><strong>SELECT Students.first_name, Students.last_name, Courses.course_name:</strong> هذا هو الأمر الذي يُستخدم لاختيار البيانات التي تريد استرجاعها.</li>
+      <li><strong>FROM Students:</strong> يشير إلى الجدول الأساسي الذي ستشرح منه البيانات.</li>
+      <li><strong>JOIN Enrollments ON Students.student_id = Enrollments.student_id:</strong> يربط جدول Students مع جدول Enrollments بناءً على العمود المشترك بينهما، وهو student_id.</li>
+      <li><strong>JOIN Courses ON Enrollments.course_id = Courses.course_id:</strong> الآن نقوم بربط جدول Enrollments بجدول Courses، الذي يحتوي على بيانات المساقات.</li>
+      <li><strong>WHERE Students.student_id = 1:</strong> يُستخدم لتحديد شرط لتصفية النتائج. يحدد أن الاستعلام يجب أن يعرض فقط البيانات الخاصة بالطالب الذي يحمل student_id = 1.</li>
+    </ul>
+  </div>
+
+  <div class="export-actions">
+    <button class="btn btn-primary" onclick="navigate('mongodb')">🍃 القسم الثاني: MongoDB Atlas ←</button>
+  </div>
+  </div>`;
+  document.getElementById('content').innerHTML=h;
+}
+
+/* ======================= MONGODB ======================= */
+function renderMongoDB(){
+  document.getElementById('pageTitle').textContent='MongoDB Atlas — القسم الثاني';
+  let h=`<div class="slide-up"><div class="unit-badge">الجانب العملي — الجزء الثاني</div>
+  <h2 style="font-size:1.35rem;margin-bottom:20px;color:var(--text);line-height:1.5;">🍃 MongoDB Atlas</h2>
+
+  <div class="topic">
+    <h3><span class="topic-num">1</span>أنواع قواعد بيانات NoSQL</h3>
+    <ul>
+      <li><strong>قواعد البيانات المستندة إلى الوثائق:</strong> تخزن البيانات في شكل وثائق مشابهة لـ JSON. مثال: MongoDB.</li>
+      <li><strong>قواعد البيانات القائمة على الأعمدة:</strong> تخزن البيانات في أعمدة بدلًا من الصفوف. مثال: Cassandra.</li>
+      <li><strong>قواعد البيانات الموجهة نحو الرسم البياني:</strong> تخزن البيانات كعقد وعلاقات. مثال: Neo4j.</li>
+      <li><strong>قواعد البيانات القائمة على المفاتيح والقيم:</strong> تخزن البيانات كأزواج مفتاح-قيمة. مثال: Redis.</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">2</span>MongoDB Atlas</h3>
+    <p>MongoDB Atlas هي خدمة قاعدة بيانات سحابية مُدارة بالكامل مبنية على MongoDB. تم تطويرها بواسطة شركة MongoDB وتتيح للمستخدمين نشر قواعد البيانات السحابية بسهولة على مزودي الخدمات السحابية مثل Amazon Web Services (AWS) وMicrosoft Azure وGoogle Cloud Platform.</p>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">3</span>ميزات MongoDB Atlas</h3>
+    <ul>
+      <li><strong>النشر السريع:</strong> يمكن للمستخدمين إنشاء مجموعات (clusters) بسرعة عبر واجهة مستخدم بديهية أو باستخدام واجهات برمجة التطبيقات (APIs).</li>
+      <li><strong>إدارة تلقائية:</strong> يتولى Atlas إدارة النسخ الاحتياطية، والتحديثات التلقائية، والمراقبة، والتوسع التلقائي، مما يقلل من الأعباء الإدارية.</li>
+      <li><strong>التوسع التلقائي:</strong> يتيح التوسع الديناميكي للموارد وفقًا لحجم البيانات وحركة المرور، سواء بشكل أفقي أو عمودي.</li>
+      <li><strong>النسخ الاحتياطي والاسترداد:</strong> يتم النسخ الاحتياطي تلقائيًا مع إمكانيات الاسترداد الفوري.</li>
+      <li><strong>مراقبة الأداء:</strong> يحتوي على أدوات تحليل الأداء لمراقبة استخدام الموارد والأداء العام للنظام.</li>
+      <li><strong>واجهة استخدام بسيطة:</strong> عبر واجهة المستخدم الرسومية (GUI)، يمكن للمستخدمين إنشاء قواعد بيانات، إدارة التجمعات (clusters)، وضبط الإعدادات بسهولة.</li>
+      <li><strong>تكامل سهل:</strong> يدعم التكامل مع أدوات التطوير والتحليلات مثل BI Connector وأداة MongoDB Charts وMongoDB Compass.</li>
+    </ul>
+    <p>MongoDB Atlas مناسب للتطبيقات التي تتطلب مرونة كبيرة في تصميم البيانات، مثل التطبيقات التي تعتمد على البيانات غير المهيكلة أو شبه المهيكلة.</p>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">4</span>الاستخدامات الشائعة لـ MongoDB Atlas</h3>
+    <ul>
+      <li><strong>1) التطبيقات السحابية واسعة النطاق:</strong> مثال واقعي: Uber تستخدم MongoDB لتخزين بيانات الوقت الفعلي مثل مواقع الركاب والسائقين.</li>
+      <li><strong>2) التجارة الإلكترونية:</strong> مثال واقعي: eBay يعتمد على MongoDB لإدارة الكميات الضخمة من البيانات غير المهيكلة المرتبطة بالمبيعات والمزادات.</li>
+      <li><strong>3) تحليلات البيانات الضخمة (Big Data Analytics):</strong> مثال واقعي: Comcast تستخدم MongoDB لتخزين وتحليل بيانات الأداء والشبكة من ملايين الأجهزة المتصلة بخدمات الإنترنت والتلفاز الخاصة بها.</li>
+      <li><strong>4) الألعاب الإلكترونية:</strong> مثال واقعي: EA Sports تعتمد على MongoDB Atlas لإدارة بيانات المستخدمين والتفاعل مع الألعاب عبر الإنترنت.</li>
+      <li><strong>5) إنترنت الأشياء (IoT):</strong> مثال واقعي: Bosch تستخدم MongoDB لإدارة بيانات الأجهزة الذكية المتصلة بالإنترنت.</li>
+      <li><strong>6) تطبيقات الصحة والتكنولوجيا الحيوية:</strong> مثال واقعي: Apollo منصة خدمات صحية تعتمد على MongoDB Atlas لتخزين بيانات المرضى بشكل آمن.</li>
+      <li><strong>7) أنظمة إدارة المحتوى (CMS):</strong> مثال واقعي: Forbes مجلة Forbes تستخدم MongoDB لتخزين وإدارة المحتوى المنشور على موقعها الإلكتروني.</li>
+      <li><strong>8) الشبكات الاجتماعية:</strong> مثال واقعي: LinkedIn تعتمد على MongoDB لتخزين بيانات المستخدمين وإدارة تفاعلاتهم مع بعضهم البعض.</li>
+      <li><strong>9) إدارة سلسلة التوريد:</strong> مثال واقعي: KPMG تعتمد MongoDB لإدارة بيانات سلسلة التوريد وتحليلها.</li>
+      <li><strong>10) إدارة البيانات المالية:</strong> مثال واقعي: HSBC يستخدم MongoDB Atlas لتحليل البيانات المالية الضخمة.</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">5</span>رابط الدخول والتسجيل</h3>
+    <p><strong>رابط الدخول إلى موقع MongoDB Atlas:</strong></p>
+    <p><a href="https://www.MongoDB.com/products/platform/Atlas-database" target="_blank" style="color:var(--primary);font-weight:700;">https://www.MongoDB.com/products/platform/Atlas-database</a></p>
+    <p><strong>التسجيل في موقع MongoDB Atlas — Try free</strong></p>
+    <ul>
+      <li>يمكن تعبئة النموذج أو يمكن التسجيل عبر Sign up with Google.</li>
+      <li>ويجب أن تكون مسجلًا في عنوان بريدي معين في نفس المتصفح الذي تستخدمه.</li>
+      <li>ملاحظة: عند العودة إلى الموقع لاحقًا يمكن الدخول إلى صفحة الدخول للموقع مباشرة من خلال الرابط: <a href="https://account.MongoDB.com/account/login?nds=true" target="_blank" style="color:var(--primary);">https://account.MongoDB.com/account/login?nds=true</a></li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">6</span>إنشاء قاعدة بيانات ومجموعة بيانات (Collections)</h3>
+    <p>بعد إعداد المستخدم وعنوان IP، اضغط على Clusters ويمكن الوصول إليها من خلال الضغط على database في القائمة على يسار الشاشة أو الضغط على overview ثم اضغط على Browse Collections.</p>
+    <ul>
+      <li>اضغط على Add My Own Data لإنشاء قاعدة بيانات جديدة.</li>
+      <li>أدخل اسمًا للقاعدة (مثال: <code>StudentRecords</code>)، واسمًا للمجموعة (Collection) (مثال: <code>Students</code>).</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">7</span>إضافة بيانات إلى المجموعة (Collection)</h3>
+    <p>مثال: لنفترض أننا نريد إجراء عملية إدخال إلى مستند حيث نفترض البيانات التالية في مستند students:</p>
+    <ul>
+      <li>Student_id=001 | name=John doe | Age=21 | major=Digital Business Administration</li>
+      <li>Student_id=002 | name=Ahmad husni | Age=22 | major=Accounting</li>
+      <li>Student_id=003 | name=Sameer ahmad | Age=19 | major=HR</li>
+      <li>Student_id=004 | name=Ayham khader | Age=20 | major=Business</li>
+      <li>Student_id=005 | name=Ali Saleh | Age=22 | major=IT</li>
+      <li>Student_id=006 | name=Ramzi Naser | Age=21 | major=Digital Marketing</li>
+      <li>Student_id=007 | name=Sara Ali | Age=22 | major=Marketing</li>
+    </ul>
+    <p><strong>المطلوب الأول:</strong> تنفيذ عمليات الإدخال للسجلات كما في الجدول أعلاه. بعد إنشاء المجموعة، اضغط على Insert Document (والموجودة في يمين الشاشة) لإضافة بيانات.</p>
+    <p>يمكن حذف أول سطرين بالضغط على إشارة الحذف الملاصقة لرقم السطر وبعد حذف السطرين نضغط على { } حيث يمكن ادخال المطلوب بين الاشارتين { }</p>
+    <p>وتظهر شاشة الادخال بالنحو التالي:</p>
+    <pre>{
+  "student_id": "001",
+  "name": "John Doe",
+  "age": 21,
+  "major": "Digital Business Administration"
+}</pre>
+    <p>الشيفرة المعروضة هي عبارة عن وثيقة JSON (JavaScript Object Notation) وهي الطريقة التي تخزن بها MongoDB البيانات. هذه الوثيقة تمثل سجلًا واحدًا لطالب، وتحتوي على المعلومات التالية:</p>
+    <ul>
+      <li><strong>student_id:</strong> رقم تعريف الطالب.</li>
+      <li><strong>name:</strong> اسم الطالب.</li>
+      <li><strong>age:</strong> عمر الطالب.</li>
+      <li><strong>major:</strong> تخصص الطالب.</li>
+    </ul>
+    <p><strong>لماذا تستخدم JSON؟</strong></p>
+    <ul>
+      <li><strong>بسيطة وسهلة القراءة:</strong> بنية JSON تشبه كثيرًا طريقة كتابة الأكواد باللغات البرمجية، مما يجعلها سهلة الفهم والتعديل.</li>
+      <li><strong>مرنة:</strong> تسمح بإضافة أو حذف حقول جديدة بسهولة، مما يجعل قاعدة البيانات قابلة للتوسع.</li>
+      <li><strong>مستخدمة على نطاق واسع:</strong> هي الصيغة القياسية لتبادل البيانات عبر الإنترنت، مما يسهل دمجها مع تطبيقات أخرى.</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">8</span>المطلوب الثاني: قراءة (عرض) معلومات جميع الطلاب في المجموعة</h3>
+    <p><strong>الحل:</strong></p>
+    <ul>
+      <li>في حقل Filter في نافذة Find، ندخل الاشارة التالية: <code>{ }</code></li>
+      <li>وفي حالة ترك نافذة الفلتر فارغة أيضًا سيقوم بعرض جميع البيانات لجميع الطلبة.</li>
+      <li>بعد ذلك يتم الضغط على Apply أو Enter.</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">9</span>المطلوب الثالث: الاستعلام عن بيانات الطالب Ayham khader</h3>
+    <p><strong>الحل:</strong> للاستعلام عن اسم معين نقوم من خلال شريط البحث في مستطيل الفلترة بكتابة الكود التالي ويجب مراعاة كتابة الاسم تمامًا كما تم إدخاله من حيث حالة الحروف صغيرة أو كبيرة أو الفراغات بين الأسماء وهكذا:</p>
+    <pre>{"name":"Ayham khader"}</pre>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">10</span>المطلوب الرابع: تحديث البيانات (Updating Data)</h3>
+    <p>قم بتعديل عمر الطالب "Ayham khader" ليصبح 22 عامًا.</p>
+    <p><strong>خطوات الحل:</strong></p>
+    <ul>
+      <li>ابحث عن الطالب باستخدام الاستعلام السابق أو يمكن من خلال استعراض سجلات الطلاب جميعهم والبحث عن سجل Ayham khader.</li>
+      <li>انقر على أيقونة القلم بجانب حقل "age".</li>
+      <li>قم بتعديل القيمة من 21 إلى 22.</li>
+      <li>احفظ التعديلات.</li>
+    </ul>
+  </div>
+
+  <div class="topic">
+    <h3><span class="topic-num">11</span>المطلوب الخامس: حذف بيانات الطالبة Sara Ali</h3>
+    <p><strong>الحل:</strong> نستطيع البحث عن اسم الطالب كما في الاستعلامات السابقة أو استعراض الاسم من خلال السجلات ثم الضغط على إشارة الحذف المحاذية للسجل كما في الصورة.</p>
+  </div>
+
+  <div class="export-actions">
+    <button class="btn btn-outline" onclick="navigate('practical')">🛠️ عودة للجانب العملي SQLite</button>
+    <button class="btn btn-primary" onclick="navigate('requirements')">📋 المطلوب العملي والتسليم ←</button>
+  </div>
+  </div>`;
+  document.getElementById('content').innerHTML=h;
+}
+
+/* ======================= REQUIREMENTS ======================= */
+function renderRequirements(){
+  document.getElementById('pageTitle').textContent='المطلوب العملي وآلية التسليم';
+  let h=`<div class="slide-up"><div class="unit-badge">المطلوب العملي — التقرير النهائي</div>
+  <h2 style="font-size:1.35rem;margin-bottom:20px;color:var(--text);line-height:1.5;">📋 المطلوب العملي لمقرر أنظمة قواعد البيانات</h2>
+  <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:24px;">يتكون المطلوب من قسمين، كل قسم 50 علامة، والمجموع 100 علامة.</p>
+
+  <div class="topic" style="border-right-color:#1565C0;">
+    <h3><span class="topic-num">1</span>القسم الأول (50 علامة): SQLite</h3>
+    <p><strong>إنشاء قاعدة بيانات لإدارة تسجيل الطلبة في المساقات باستخدام SQLite و DB Browser for SQLite.</strong></p>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">أولاً: إنشاء قاعدة البيانات</h4>
+    <ul>
+      <li>أنشئ قاعدة بيانات جديدة باسم: <code>university_registration.db</code></li>
+      <li>ثم احفظها في مجلد يحمل اسمك ورقمك الجامعي. مثال: <code>Ahmad_Saleh_1234567</code></li>
+    </ul>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">ثانياً: إنشاء الجداول</h4>
+    <p><strong>جدول Students:</strong></p>
+    <ul>
+      <li>student_id — INTEGER — Primary Key, Auto Increment</li>
+      <li>first_name — TEXT</li>
+      <li>last_name — TEXT</li>
+      <li>email — TEXT</li>
+      <li>phone — TEXT</li>
+      <li>city — TEXT</li>
+    </ul>
+    <p><strong>جدول Courses:</strong></p>
+    <ul>
+      <li>course_id — INTEGER — Primary Key, Auto Increment</li>
+      <li>course_name — TEXT</li>
+      <li>credit_hours — INTEGER</li>
+    </ul>
+    <p><strong>جدول Enrollments:</strong></p>
+    <ul>
+      <li>enrollment_id — INTEGER — Primary Key, Auto Increment</li>
+      <li>student_id — INTEGER — Foreign Key</li>
+      <li>course_id — INTEGER — Foreign Key</li>
+    </ul>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">ثالثاً: إنشاء العلاقات (Foreign Keys)</h4>
+    <ul>
+      <li>إنشاء علاقة (Foreign Key) بين الحقل student_id في جدول Enrollments والحقل student_id في جدول Students.</li>
+      <li>وإنشاء علاقة (Foreign Key) بين الحقل course_id في جدول Enrollments والحقل course_id في جدول Courses.</li>
+      <li>ثم إدراج صور في ملف التقرير توضح إنشاء كل علاقة وظهورها بشكل صحيح داخل قاعدة البيانات.</li>
+      <li>ثم التقاط صورة نهائية لهيكل جدول Enrollments بعد إنشاء المفتاحين الخارجيين وظهور العلاقات بشكل صحيح.</li>
+    </ul>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">رابعاً: إدخال البيانات — جدول Students</h4>
+    <ul>
+      <li>1 | Omar | Khalil | omar.khalil@example.com | 0598123456 | Jenin</li>
+      <li>2 | Hala | Naser | hala.naser@example.com | 0569234567 | Nablus</li>
+      <li>3 | Yazan | Ahmad | yazan.ahmad@example.com | 0597345678 | Tulkarm</li>
+      <li>4 | Rawan | Saleh | rawan.saleh@example.com | 0568456789 | Ramallah</li>
+      <li>5 | Laith | Mansour | laith.mansour@example.com | 0599567890 | Jenin</li>
+    </ul>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">خامساً: إدخال بيانات جدول Courses</h4>
+    <ul>
+      <li>1 | Database Systems | 3</li>
+      <li>2 | Web Development | 3</li>
+      <li>3 | Digital Marketing | 2</li>
+      <li>4 | Business Analytics | 3</li>
+      <li>5 | E-Commerce | 2</li>
+    </ul>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">سادساً: إدخال بيانات جدول Enrollments</h4>
+    <ul>
+      <li>enrollment_id=1 | student_id=1 | course_id=1</li>
+      <li>enrollment_id=2 | student_id=1 | course_id=2</li>
+      <li>enrollment_id=3 | student_id=2 | course_id=1</li>
+      <li>enrollment_id=4 | student_id=3 | course_id=2</li>
+      <li>enrollment_id=5 | student_id=3 | course_id=5</li>
+      <li>enrollment_id=6 | student_id=4 | course_id=4</li>
+      <li>enrollment_id=7 | student_id=5 | course_id=1</li>
+      <li>enrollment_id=8 | student_id=5 | course_id=3</li>
+    </ul>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">سابعاً: الاستعلامات المطلوبة</h4>
+    <p>ينفذ الطالب الاستعلامات الستة التالية من تبويب Execute SQL ويجب أن يضع في التقرير لكل استعلام:</p>
+    <ol style="margin:10px 20px;">
+      <li>عنوان الاستعلام.</li>
+      <li>كود الاستعلام.</li>
+      <li>صورة واضحة لنتيجة التنفيذ.</li>
+      <li>شرحًا مختصرًا لوظيفة الاستعلام.</li>
+    </ol>
+    <div class="step-box">
+      <strong>الاستعلام الأول:</strong> عرض جميع بيانات الطلبة الموجودة في جدول students<br>
+      <strong>الاستعلام الثاني:</strong> عرض جميع بيانات المساقات<br>
+      <strong>الاستعلام الثالث:</strong> عرض الطلبة (الاسم الأول والأخير للطلبة) من مدينة Jenin باستخدام الشرط where<br>
+      <strong>الاستعلام الرابع:</strong> عرض الطلبة الذين تبدأ أرقام هواتفهم بـ 056 باستخدام الأمر LIKE<br>
+      <strong>الاستعلام الخامس:</strong> عرض أسماء الطلبة وأسماء المساقات المسجلين فيها حيث ان المطلوب يتمثل بربط الجداول الثلاثة: Students, Enrollments, Courses ثم عرض الاسم الأول والأخير لكل طالب واسم المساق الذي سجل فيه.
+    </div>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">ثامناً: الصور المطلوبة في التقرير</h4>
+    <ol style="margin:10px 20px;">
+      <li>إنشاء قاعدة البيانات university_registration.db.</li>
+      <li>تصميم جدول Students.</li>
+      <li>تصميم جدول Courses.</li>
+      <li>تصميم جدول Enrollments.</li>
+      <li>المفتاح الأساسي في كل جدول.</li>
+      <li>المفتاحان الخارجيان في جدول Enrollments.</li>
+      <li>بيانات جدول Students.</li>
+      <li>بيانات جدول Courses.</li>
+      <li>بيانات جدول Enrollments.</li>
+      <li>كود ونتيجة كل استعلام من الاستعلامات الستة.</li>
+    </ol>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">تاسعاً: الملفات المطلوب تسليمها</h4>
+    <ul>
+      <li>التقرير بصيغة PDF.</li>
+      <li>ملف قاعدة البيانات: <code>university_registration.db</code></li>
+      <li>ملف Word الأصلي عند طلب المدرس.</li>
+      <li>توضع جميع الملفات في مجلد مضغوط واحد يحمل اسم الطالب ورقمه الجامعي.</li>
+    </ul>
+  </div>
+
+  <div class="topic" style="border-right-color:#059669;">
+    <h3><span class="topic-num">2</span>القسم الثاني (50 علامة): MongoDB Atlas</h3>
+    <p><strong>قم بعمل وتنفيذ المطلوبات التالية باستخدام MongoDB Atlas:</strong></p>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">أولاً: إنشاء قاعدة البيانات</h4>
+    <p>أنشئ قاعدة بيانات جديدة باسم: <code>UniversityDB</code></p>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">ثانياً: إنشاء المجموعة (Collection)</h4>
+    <p>أنشئ مجموعة (Collection) باسم: <code>Students</code></p>
+    <p><strong>المطلوب في التقرير:</strong></p>
+    <ul>
+      <li>إنشاء قاعدة البيانات باسم UniversityDB.</li>
+      <li>إنشاء المجموعة باسم Students.</li>
+      <li>إدراج صورة توضح إنشاء قاعدة البيانات والمجموعة.</li>
+    </ul>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">ثالثاً: إدخال البيانات</h4>
+    <p>قم بإدخال المستندات التالية داخل مجموعة Students:</p>
+    <ul>
+      <li><strong>المستند الأول:</strong> student_id=1 | first_name=Omar | last_name=Khalil | email=omar.khalil@example.com | phone=0598123456</li>
+      <li><strong>المستند الثاني:</strong> student_id=2 | first_name=Hala | last_name=Naser | email=hala.naser@example.com | phone=0569234567</li>
+      <li><strong>المستند الثالث:</strong> student_id=3 | first_name=Yazan | last_name=Ahmad | email=yazan.ahmad@example.com | phone=0597345678</li>
+      <li><strong>المستند الرابع:</strong> student_id=4 | first_name=Rawan | last_name=Saleh | email=rawan.saleh@example.com | phone=0568456789</li>
+      <li><strong>المستند الخامس:</strong> student_id=5 | first_name=Laith | last_name=Mansour | email=laith.mansour@example.com | phone=0599567890</li>
+    </ul>
+    <p><strong>المطلوب في التقرير:</strong> إدخال المستندات الخمسة السابقة داخل مجموعة Students، وإدراج صورة توضح جميع المستندات بعد إدخالها.</p>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">رابعاً: تنفيذ العمليات</h4>
+    <div class="step-box">
+      <strong>العملية الأولى: عرض جميع المستندات</strong><br>
+      باستخدام الاشارة المناسبة في حقل Filter وفي نافذة Find ثم إدراج صورة للنتيجة.
+    </div>
+    <div class="step-box">
+      <strong>العملية الثانية: البحث عن الطالب الذي يحمل الرقم (2)</strong><br>
+      باستخدام الكود المناسب في شريط البحث ومستطيل الفلترة.<br>
+      المطلوب: صورة الكود في الشريط، عرض بيانات الطالب رقم (2)، إدراج صورة للنتيجة.
+    </div>
+    <div class="step-box">
+      <strong>العملية الثالثة: البحث عن الطالب الذي يحمل الاسم الأول (Yazan)</strong><br>
+      وذلك باستخدام شريط البحث ومستطيل الفلترة مع كتابة الكود المطلوب.<br>
+      المطلوب: عرض الكود المستخدم في الشريط، إدراج صورة للنتيجة.
+    </div>
+    <div class="step-box">
+      <strong>العملية الرابعة: تعديل رقم هاتف الطالب رقم (4)</strong><br>
+      ابحث عن الطالب: student_id = 4 ثم عدّل رقم الهاتف إلى: 0999999999<br>
+      المطلوب: صورة قبل التعديل، صورة بعد التعديل.
+    </div>
+    <div class="step-box">
+      <strong>العملية الخامسة: حذف الطالب رقم (5)</strong><br>
+      احذف المستند الذي يحمل: student_id = 5<br>
+      المطلوب: صورة قبل الحذف، صورة بعد الحذف.
+    </div>
+
+    <h4 style="color:var(--primary);margin-top:16px;margin-bottom:8px;">المطلوب النهائي في التقرير</h4>
+    <ol style="margin:10px 20px;">
+      <li>إنشاء قاعدة البيانات UniversityDB.</li>
+      <li>إنشاء المجموعة Students.</li>
+      <li>إدخال المستندات الخمسة.</li>
+      <li>عرض جميع المستندات.</li>
+      <li>البحث عن الطالب رقم (2).</li>
+      <li>البحث عن الطالب Yazan.</li>
+      <li>تعديل رقم هاتف الطالب رقم (4).</li>
+      <li>حذف الطالب رقم (5).</li>
+      <li>إدراج صور واضحة لجميع الخطوات السابقة.</li>
+    </ol>
+  </div>
+
+  <div class="topic" style="border-right-color:#4285F4;">
+    <h3><span class="topic-num">3</span>تعليمات تسليم القسم الثاني (MongoDB Atlas)</h3>
+    <ol style="margin:10px 20px;">
+      <li>يُنفَّذ الجزء الخاص بـ MongoDB Atlas ويُوثَّق داخل نفس ملف Microsoft Word في القسم الأول (SQLite)، بحيث يكون التقرير عبارة عن ملف واحد يتضمن القسمين معًا.</li>
+      <li>تُدرج صور واضحة لجميع خطوات تنفيذ المطلوبات الخاصة بـ MongoDB Atlas وفق الترتيب المطلوب، مع كتابة عنوان مختصر أسفل كل صورة يوضح العملية المنفذة.</li>
+      <li>بعد الانتهاء من إعداد التقرير، يُحوّل ملف Word إلى ملف PDF، ويكون هو ملف التقرير النهائي للمشروع.</li>
+      <li>لا يُطلب تسليم قاعدة بيانات MongoDB Atlas، ويكتفي بتوثيق جميع خطوات التنفيذ بالصور داخل التقرير.</li>
+      <li>يلتزم الطالب بتسليم المشروع كاملًا وفق تعليمات القسم الأول، ويُعد هذا القسم جزءًا مكملًا لنفس التقرير ونفس مجلد التسليم.</li>
+      <li>يسلّم المجلد عبر منصة الأنشطة في الفترة التي تكون فيها المنصة متاحة للتسليم.</li>
+    </ol>
+  </div>
+
+  <div class="topic" style="border-right-color:#059669;">
+    <h3><span class="topic-num">4</span>آلية التسليم</h3>
+    <div class="drive-box">
+      <h3>📤 التسليم عبر Google Drive</h3>
+      <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.9;">يتم رفع جميع الملفات (التقرير PDF + ملف قاعدة البيانات + ملف Word عند الطلب) على مجلد Google Drive، ثم مشاركة الرابط مع مدرس المقرر.</p>
+      <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.9;">يجب أن يكون اسم المجلد: <strong>اسم الطالب_الرقم الجامعي</strong></p>
+      <a class="drive-btn" href="https://drive.google.com" target="_blank">📁 فتح Google Drive</a>
+    </div>
+    <div class="warning-box">
+      <strong>⚠️ تنبيه:</strong> من خلال جوجل فورم سيرسل لاحقا
+    </div>
+  </div>
+
+  <div class="topic" style="border-right-color:#B7935A;">
+    <h3><span class="topic-num">5</span>تعليمات الامتحان العملي</h3>
+    <ol style="margin:10px 20px;">
+      <li>يعقد الجانب العملي كامتحان في مختبرات الجامعة مع ضرورة تهيئة المختبرات بالأمور التالية:</li>
+      <li>تنزيل برنامج DB Browser for SQLITE عن طريق الرابط: <a href="https://sqlitebrowser.org/dl/" target="_blank" style="color:var(--primary);">https://sqlitebrowser.org/dl/</a></li>
+      <li>توفر شبكة الانترنت وذلك لاستخدام موقع MongoDB Atlas والذي يمكن الدخول إليه عن طريق الرابط: <a href="https://account.MongoDB.com/account/login?nds=true" target="_blank" style="color:var(--primary);">https://account.MongoDB.com/account/login?nds=true</a></li>
+      <li>والتسجيل في الموقع لأول مرة عن طريق الرابط: <a href="https://www.MongoDB.com/products/platform/Atlas-database" target="_blank" style="color:var(--primary);">https://www.MongoDB.com/products/platform/Atlas-database</a></li>
+      <li>مع ضرورة ان يكون الطالب قد قام بالتسجيل في الموقع ويحتفظ بعنوان البريد الالكتروني وكلمة المرور الخاصة به.</li>
+    </ol>
+    <p><strong>يتألف الامتحان من شقين:</strong></p>
+    <ul>
+      <li><strong>الشق الأول:</strong> يتعلق ببرنامج DB browser For SQLite ويأتي السؤال على غرار المثال (التطبيق العملي) الوارد في هذا الدليل بحيث يتضمن انشاء قاعدة بيانات جديدة وانشاء وتصميم جداول وإدخال بيانات وطلب استعراض بيانات (استعلامات معينة) ويراعى فيها البساطة ومحدودية الجداول والاقتصار على مدخلات قليلة مراعاة للوقت المخصص.</li>
+      <li><strong>الشق الثاني:</strong> يتمثل بالعمل على موقع MongoDB Atlas حيث يطلب انشاء قاعدة بيانات على MongoDB Atlas تحمل اسم الطالب وإدخال جدول بيانات معين على غرار المثال في هذا الدليل ويطلب القيام ببعض العمليات Create, read, update, delete.</li>
+    </ul>
+    <p><strong>آلية التصحيح:</strong> يمكن ان يقوم عضو هيئة التدريس بالتصحيح مباشرة او يقوم الطالب بعمل تصوير شاشة ووضعها على ملف وورد وتخزينه على سطح المكتب.</p>
+    <p>يخصص 50% للشق الأول و50% للشق الثاني ويخصص ساعة ونصف إلى ساعتين للامتحان.</p>
+    <p>ترصد العلامة من 100% وتحسب العلامة ضمن النظام 30% من علامة المقرر.</p>
+    <p style="text-align:center;font-weight:700;color:var(--primary);margin-top:16px;">والله ولي التوفيق</p>
+  </div>
+
+  <div class="export-actions">
+    <button class="btn btn-outline" onclick="navigate('mongodb')">🍃 عودة إلى MongoDB Atlas</button>
+    <button class="btn btn-primary" onclick="navigate('assessment')">📝 التقييم الشامل ←</button>
+  </div>
+  </div>`;
+  document.getElementById('content').innerHTML=h;
+}
+
+/* ======================= ASSESSMENT ======================= */
+function renderAssessment(){
+  document.getElementById('pageTitle').textContent='التقييم الشامل';
+  const a=state.assessment;
+  let h=`<div class="slide-up"><div class="unit-badge">التقييم النهائي</div><h2 style="font-size:1.35rem;margin-bottom:8px;">📝 التقييم الشامل</h2><p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:24px;">الدرجة النهائية من 100: صح/خطأ (40) + اختر الإجابة (60)</p><div class="assessment-section"><h2>🔹 القسم الأول: أسئلة الصح والخطأ (10 أسئلة)</h2><p class="section-desc">اختر "صح" أو "خطأ" لكل عبارة.</p>`;
+  tfQuestions.forEach((q,i)=>{
+    const sel=a.tf[i];
+    h+=`<div class="question-block" style="border-right:4px solid var(--warning);"><div class="q-text"><span class="q-num">${i+1}</span>${q.q}</div><div class="tf-options" style="display:flex;gap:12px;margin-top:12px;"><div class="option ${sel===true?'selected':''}" style="flex:1;justify-content:center;" onclick="selectTF(${i},true)"><span class="opt-letter">✓</span><span>صح</span></div><div class="option ${sel===false?'selected':''}" style="flex:1;justify-content:center;" onclick="selectTF(${i},false)"><span class="opt-letter">✗</span><span>خطأ</span></div></div></div>`;
+  });
+  h+=`</div><div class="assessment-section"><h2>🔹 القسم الثاني: اختر الإجابة الصحيحة (5 أسئلة)</h2><p class="section-desc">اختر الإجابة الصحيحة.</p>`;
+  const L=['أ','ب','ج','د'];
+  mcqQuestions.forEach((q,i)=>{
+    const sel=a.mcq[i];
+    h+=`<div class="question-block"><div class="q-text"><span class="q-num">${i+1}</span>${q.q}</div><div class="options">`;
+    q.options.forEach((opt,oi)=>{
+      h+=`<div class="option ${sel===oi?'selected':''}" onclick="selectMCQ(${i},${oi})"><span class="opt-letter">${L[oi]}</span><span>${opt}</span></div>`;
+    });
+    h+='</div></div>';
+  });
+  h+='</div>';
+  if(a.submitted){
+    h+=`<div class="score-box"><div class="score-num">${a.score}/100</div><div class="score-label">الدرجة النهائية</div></div><p style="text-align:center;color:var(--success);font-weight:700;margin-bottom:16px;">🎓 تم التسليم بنجاح</p><div class="export-actions"><button class="export-btn" onclick="exportAllToExcel()">📊 تصدير جميع النتائج</button><button class="btn btn-outline" onclick="resetAssessment()">🔄 إعادة التقييم</button></div>`;
+  }else{
+    h+='<div class="btn-row" style="justify-content:center;margin-top:24px;"><button class="btn btn-primary btn-large" onclick="submitAssessment()">📤 تسليم التقييم</button></div>';
+  }
+  h+='</div>';
+  document.getElementById('content').innerHTML=h;
+}
+
+function selectTF(i,v){if(state.assessment.submitted)return;state.assessment.tf[i]=v;saveState(true);renderAssessment()}
+function selectMCQ(i,v){if(state.assessment.submitted)return;state.assessment.mcq[i]=v;saveState(true);renderAssessment()}
+
+function submitAssessment(){
+  const a=state.assessment;
+  let ok=true;
+  for(let i=0;i<tfQuestions.length;i++){if(a.tf[i]===undefined)ok=false}
+  for(let i=0;i<mcqQuestions.length;i++){if(a.mcq[i]===undefined)ok=false}
+  if(!ok){showToast('⚠️ أجب على جميع الأسئلة','error');return}
+  let tfS=0,mcS=0;
+  tfQuestions.forEach((q,i)=>{if(a.tf[i]===q.correct)tfS+=4});
+  mcqQuestions.forEach((q,i)=>{if(a.mcq[i]===q.correct)mcS+=12});
+  a.score=tfS+mcS;
+  a.submitted=true;
+  saveState();renderSidebar();renderAssessment();
+  showToast(`🎓 نتيجتك: ${a.score}/100`,'success');
+}
+function resetAssessment(){state.assessment={tf:{},mcq:{},submitted:false,score:0};saveState();renderAssessment()}
+
+function setTheme(t){state.theme=t;document.documentElement.setAttribute('data-theme',t==='blue'?'':t);document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('active',s.dataset.theme===t));saveState(true)}
+function toggleDark(){state.dark=!state.dark;applyPreferences();saveState(true)}
+function applyPreferences(){
+  document.documentElement.setAttribute('data-dark',state.dark);
+  document.getElementById('darkLabel').textContent=state.dark?'☀️ الوضع المضيء':'🌙 الوضع الداكن';
+  document.getElementById('darkIcon').textContent=state.dark?'☀️':'⬜';
+  document.documentElement.style.setProperty('--font-size',state.fontSize+'px');
+  document.getElementById('fontSizeDisplay').textContent=state.fontSize;
+  document.documentElement.setAttribute('data-theme',state.theme==='blue'?'':state.theme);
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('active',s.dataset.theme===state.theme));
+  const ni=document.getElementById('studentNameInput');
+  if(ni)ni.value=state.studentName||'';
+}
+function changeFontSize(d){state.fontSize=Math.max(13,Math.min(22,state.fontSize+d));applyPreferences();saveState(true)}
+function toggleControls(){document.getElementById('controlsPanel').classList.toggle('open')}
+let toastT;
+function showToast(m,t=''){const el=document.getElementById('toast');el.textContent=m;el.className='toast show '+t;clearTimeout(toastT);toastT=setTimeout(()=>{el.className='toast '+t},3000)}
+
+function init(){
+  loadState();applyPreferences();
+  if(state.currentPage.startsWith('unit')){const uid=parseInt(state.currentPage.replace('unit',''));if(!isUnitUnlocked(uid))state.currentPage='unit1'}
+  if(state.currentPage==='assessment'&&!units.every(u=>isUnitCompleted(u.id)))state.currentPage='unit1';
+  renderSidebar();renderContent();
+  window.addEventListener('beforeunload',()=>saveState(true));
+  setInterval(()=>saveState(true),60000);
+}
+
+document.addEventListener('click',function(e){
+  const sb=document.getElementById('sidebar');
+  const tg=document.querySelector('.menu-toggle');
+  if(window.innerWidth<=900&&sb.classList.contains('open')){if(!sb.contains(e.target)&&!tg.contains(e.target))sb.classList.remove('open')}
+  const pn=document.getElementById('controlsPanel');
+  const ct=document.querySelector('.controls-toggle');
+  if(pn.classList.contains('open')){if(!pn.contains(e.target)&&!ct.contains(e.target))pn.classList.remove('open')}
+});
+
+init();
+</script>
+</body>
+</html>
